@@ -1,0 +1,7 @@
+base drawio
+author n/a
+email n/a
+date n/a
+name Draw.io plugin
+desc Embed Draw.io editor
+url http://www.dokuwiki.org
