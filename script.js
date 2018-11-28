@@ -46,7 +46,7 @@ jQuery( document ).ready( function() {
                             decodeURIComponent( atob( msg.data.split( ',' )[1] ).split( '' ).map( function( c ) {
                                 return '%' + ( '00' + c.charCodeAt( 0 ).toString( 16 ) ).slice( -2 );
                             } ).join( '' ) );
-                        jQuery.post( DOKU_BASE + 'lib/exe/ajax.php?call=mediaupload&ow=checked&ns=' + ns + '&qqfile=' + id + '&sectok=' + JSINFO['sectok'], datastr )
+                        jQuery.post( DOKU_BASE + 'lib/exe/ajax.php?call=mediaupload&ow=true&ns=' + ns + '&qqfile=' + id + '&sectok=' + JSINFO['sectok'], datastr )
                             .done( function() {
                                 jQuery( window ).off( 'message', onmessage );
                                 jQuery( '#drawio-frame' ).remove();
