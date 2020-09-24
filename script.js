@@ -3,7 +3,7 @@ jQuery( document ).ready( function() {
         jQuery( 'img, object' ).filter( '.media, .medialeft, .mediacenter, .mediaright' ).add( 'iframe.svgpureinsert' ).each( function() {
             var current = jQuery( this );
             var src = this.nodeName == 'OBJECT' ? current.attr( 'data' ) : current.attr( 'src' );
-            var extension = src.split( '.' ).pop().toLowerCase(); 
+            var extension = src.split( '.' ).pop().toLowerCase();
             if( extension == 'svg' ) {
                 var editlink = '<br><button class="drawio-btn btn btn-default btn-xs" style="clear:both" data-id="' + src.split('media=')[1].split('&')[0] + '">Editieren</button>';
                 if( current.parent()[0].nodeName == 'A' ) {
@@ -16,8 +16,8 @@ jQuery( document ).ready( function() {
     }
 
     jQuery( 'button.drawio-btn' ).on( 'click', function() {
-        var drawio_url = 'https://www.draw.io/?embed=1&proto=json&spin=1';
-        
+        var drawio_url = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1';
+
         if( !jQuery( '#drawio-frame' )[0] ) {
             var fullId = jQuery( this ).data( 'id' );
             var id = fullId;
@@ -76,7 +76,7 @@ jQuery( document ).ready( function() {
             return;
         }
         id += '.svg';
-        var datastr = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' + 
+        var datastr = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' +
             '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1px" height="1px" version="1.1" content="&lt;mxfile userAgent=&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36&quot; version=&quot;7.9.5&quot; editor=&quot;www.draw.io&quot;&gt;&lt;diagram id=&quot;8c846276-93cf-00fc-3101-d1fabb6ae99a&quot; name=&quot;Seite-1&quot;&gt;dZHBEoIgEIafhrtCNXY2q0snD51JEJjQdRBH6+nTwIyxuLB8/7+7sCCSVsPJ0EZegHGNcMQGRA4I43iDd+M2kYcjSbJ3QBjFvGkBuXpyDyNPO8V4GxgtgLaqCWEBdc0LGzBqDPShrQQddm2o4CuQF1Sv6VUxK/0rttHCz1wJOXeOI6/caHEXBrra90OYlO/l5IrOtby/lZRB/4VIhkhqAKyLqiHleprtPDaXd/yjfu5teG1/JIzBUns8BB9Ishc=&lt;/diagram&gt;&lt;/mxfile&gt;" style="background-color: rgb(255, 255, 255);"><defs/><g transform="translate(0.5,0.5)"/></svg>';
         jQuery.post( DOKU_BASE + 'lib/exe/ajax.php?call=mediaupload&ns=' + ns + '&qqfile=' + id + '&sectok=' + JSINFO['sectok'], datastr )
             .done( function( response ) {
