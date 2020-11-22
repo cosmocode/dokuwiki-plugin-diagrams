@@ -53,9 +53,13 @@ jQuery( document ).ready( function() {
         const msg = JSON.parse( e.originalEvent.data );
         const drawio = jQuery( '#drawio-frame' )[0].contentWindow;
         if( msg.event === 'init' ) {
+            // try loading existing diagram file
             jQuery.get(DOKU_BASE + 'lib/exe/fetch.php?media=' + fullId, function (data) {
                 drawio.postMessage(JSON.stringify({action: 'load', xml: data}), '*');
-            }, 'text');
+            }, 'text')
+            .fail(function () { // catch 404, file does not exist yet locally
+                drawio.postMessage(JSON.stringify({action: 'load', xml: ''}), '*');
+            });
         } else if ( msg.event === 'save' ) {
             drawio.postMessage(
                 JSON.stringify( {action: 'export', format: 'xmlsvg', spin: 'Speichern' } ),
@@ -132,4 +136,82 @@ jQuery( document ).ready( function() {
                 alert( 'Fehler beim Speichern' );
             } );
     } );
+
+    /**
+     * Launch the editor and create a new diagram
+     *
+     * @param event
+     */
+    function createDiagram(event) {
+        event.preventDefault();
+
+        let href;
+        // FIXME does this really work?
+        // get namespace selected in ns tree
+        $selectedNSLink = jQuery('.idx_dir.selected');
+        if ($selectedNSLink && $selectedNSLink.length > 0) {
+            href = $selectedNSLink.attr('href');
+        } else {
+            // FIXME url rewriting?
+            href = location.href;
+        }
+        const ns = extractNs(href);
+        const id = jQuery('#drawio__create-filename').val();
+
+        if (!validId(id)) {
+            alert('name is empty or contains invalid characters!');
+            return;
+        }
+
+        const fullIdArray = [ns, id];
+        launchEditor(fullIdArray.join(':') + '.svg');
+    }
+
+    // extract ns param from URL
+    function extractNs(url) {
+        urlParam = function(name) {
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(url);
+            return results[1] || '';
+        };
+        return decodeURIComponent(urlParam('ns'));
+    }
+
+    // returns a diagram creation form as jQuery object
+    function newDiagramForm() {
+        currentNs = extractNs(location.href);
+        $drawioCreateForm = jQuery(
+            '<form>' +
+            '<p>Create draw.io diagram in current namespace <strong><span id="drawio__current-ns">' +
+            currentNs +
+            '</strong></span></p>' +
+            '<input type="text" name="drawio-create-filename" id="drawio__create-filename" />' +
+            '<button id="drawio__create">Create</button>' +
+            '</form>'
+        );
+
+        jQuery( $drawioCreateForm ).on( 'submit', createDiagram );
+
+        return $drawioCreateForm;
+    }
+
+    /**
+     * Full-page media manager
+     */
+    const $mm_page = jQuery('#mediamanager__page');
+    if (!$mm_page.length) return;
+
+    const $mm_tree = jQuery("#media__tree");
+    $mm_tree.prepend(newDiagramForm());
+
+    $mm_tree.find('a.idx_dir').each(function (e) {
+        const $this = jQuery( this );
+        $this.on('click', function (e) {
+            e.preventDefault();
+            ns = extractNs(e.target);
+            const $nsSpan = jQuery('#drawio__current-ns');
+            $nsSpan.text(ns);
+        });
+    });
+
+    // TODO pop-up media manager
 } );
