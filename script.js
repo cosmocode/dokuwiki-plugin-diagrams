@@ -1,4 +1,4 @@
-jQuery( document ).ready( function() {
+jQuery( function() {
 
     const serviceUrl = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1';
     const doctypeXML = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
@@ -27,14 +27,10 @@ jQuery( document ).ready( function() {
 
     /**
      * Launch diagram editor's iframe
-     *
-     * @param fullId
      */
     const launchEditor = function(fullId) {
         if (!jQuery('#drawio-frame')[0]) {
-
             jQuery('body').append('<iframe id="drawio-frame" style="border: 0;position: fixed; top: 0; left: 0; right:0; bottom: 0; width:100%; height:100%; z-index: 9999;"></iframe>');
-
             jQuery(window).on('message', {fullId: fullId}, handleServiceMessages);
             jQuery('#drawio-frame').attr('src', serviceUrl);
         }
@@ -77,8 +73,11 @@ jQuery( document ).ready( function() {
                     .done( function() {
                         jQuery( window ).off( 'message', handleServiceMessages );
                         jQuery( '#drawio-frame' ).remove();
+                        // media manager window should reflect selection in ns tree
+                        const url = new URL(location.href);
+                        url.searchParams.set('ns', ns);
                         setTimeout( function() {
-                            location.reload();
+                            location.assign(url);
                         }, 200 );
                     } ).fail( function() {
                     alert( 'Fehler beim Speichern' );
@@ -203,13 +202,14 @@ jQuery( document ).ready( function() {
     const $mm_tree = jQuery("#media__tree");
     $mm_tree.prepend(newDiagramForm());
 
+    // update diagram NS when clicking in media tree
     $mm_tree.find('a.idx_dir').each(function (e) {
         const $this = jQuery( this );
         $this.on('click', function (e) {
             e.preventDefault();
-            ns = extractNs(e.target);
+
             const $nsSpan = jQuery('#drawio__current-ns');
-            $nsSpan.text(ns);
+            $nsSpan.text(extractNs(e.target));
         });
     });
 
