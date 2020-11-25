@@ -1,91 +1,16 @@
 jQuery( function() {
-
-    const serviceUrl = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1';
-    const doctypeXML = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
-
-    // check if name/id of new diagram is valid
-    function validId(id) {
-        return id.length > 0 && /^[\w][\w\.\-]*$/.test( id )
-    }
-
-    // return URL to fetch existing diagram from DW
-    function getLocalDiagramUrl(ns, id) {
-        return DOKU_BASE + 'lib/exe/ajax.php?call=mediaupload&ow=true&ns=' + ns + '&qqfile=' + id + '&sectok=' + JSINFO['sectok'];
-    }
-
-    // split full id into ns and id parts
-    function splitFullId(fullId) {
-        let id = fullId;
-        let ns = '';
-        const idParts = id.split(':');
-        if (idParts.length > 1) {
-            ns = idParts[0];
-            id = idParts.slice(1).join(':');
-        }
-         return {ns: ns, id: id};
-    }
+    /* DOKUWIKI:include script/helpers.js */
+    /* DOKUWIKI:include script/service.js */
 
     /**
      * Launch diagram editor's iframe
      */
-    const launchEditor = function(fullId) {
+    const launchEditor = function(event) {
+        const fullId = event.data.fullId;
         if (!jQuery('#drawio-frame')[0]) {
             jQuery('body').append('<iframe id="drawio-frame" style="border: 0;position: fixed; top: 0; left: 0; right:0; bottom: 0; width:100%; height:100%; z-index: 9999;"></iframe>');
             jQuery(window).on('message', {fullId: fullId}, handleServiceMessages);
             jQuery('#drawio-frame').attr('src', serviceUrl);
-        }
-    };
-
-    /**
-     * Handle messages from diagramming service
-     *
-     * @param e
-     */
-    const handleServiceMessages = function( e ) {
-        // get diagram info passed to the function
-        const fullId = e.data.fullId;
-        const {ns, id} = splitFullId(fullId);
-
-        const msg = JSON.parse( e.originalEvent.data );
-        const drawio = jQuery( '#drawio-frame' )[0].contentWindow;
-        if( msg.event === 'init' ) {
-            // try loading existing diagram file
-            jQuery.get(DOKU_BASE + 'lib/exe/fetch.php?media=' + fullId, function (data) {
-                drawio.postMessage(JSON.stringify({action: 'load', xml: data}), '*');
-            }, 'text')
-            .fail(function () { // catch 404, file does not exist yet locally
-                drawio.postMessage(JSON.stringify({action: 'load', xml: ''}), '*');
-            });
-        } else if ( msg.event === 'save' ) {
-            drawio.postMessage(
-                JSON.stringify( {action: 'export', format: 'xmlsvg', spin: 'Speichern' } ),
-                '*'
-            );
-        } else if ( msg.event === 'export' ) {
-            if ( msg.format !== 'svg' ) {
-                alert( 'Nicht unterstützt!' );
-            } else {
-                const datastr = doctypeXML + '\n' +
-                    decodeURIComponent( atob( msg.data.split( ',' )[1] ).split( '' ).map( function( c ) {
-                        return '%' + ( '00' + c.charCodeAt( 0 ).toString( 16 ) ).slice( -2 );
-                    } ).join( '' ) );
-                jQuery.post( getLocalDiagramUrl(ns, id), datastr )
-                    .done( function() {
-                        jQuery( window ).off( 'message', handleServiceMessages );
-                        jQuery( '#drawio-frame' ).remove();
-                        // media manager window should reflect selection in ns tree
-                        const url = new URL(location.href);
-                        url.searchParams.set('ns', ns);
-                        setTimeout( function() {
-                            location.assign(url);
-                        }, 200 );
-                    } ).fail( function() {
-                    alert( 'Fehler beim Speichern' );
-                } );
-            }
-        } else if( msg.event === 'exit' ) {
-            jQuery( window ).off( 'message', handleServiceMessages );
-            jQuery( '#drawio-frame' ).remove();
         }
     };
 
@@ -109,7 +34,7 @@ jQuery( function() {
     // attach diagram editing function to the button rendered on pages
     jQuery( 'button.drawio-btn' ).on( 'click', function () {
         const fullId = jQuery( this ).data( 'id' );
-        launchEditor(fullId);
+        launchEditor({data: {fullId: fullId}});
     });
 
     // create a new diagram, triggered by click on page tools item
@@ -145,9 +70,8 @@ jQuery( function() {
         event.preventDefault();
 
         let href;
-        // FIXME does this really work?
         // get namespace selected in ns tree
-        $selectedNSLink = jQuery('.idx_dir.selected');
+        const $selectedNSLink = jQuery('.idx_dir.selected');
         if ($selectedNSLink && $selectedNSLink.length > 0) {
             href = $selectedNSLink.attr('href');
         } else {
@@ -163,22 +87,17 @@ jQuery( function() {
         }
 
         const fullIdArray = [ns, id];
-        launchEditor(fullIdArray.join(':') + '.svg');
+        launchEditor({data:{fullId: fullIdArray.join(':') + '.svg'}});
     }
 
-    // extract ns param from URL
-    function extractNs(url) {
-        urlParam = function(name) {
-            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(url);
-            return results[1] || '';
-        };
-        return decodeURIComponent(urlParam('ns'));
-    }
-
-    // returns a diagram creation form as jQuery object
+    /**
+     * returns a diagram creation form as jQuery object
+     *
+     * @returns {jQuery|HTMLElement}
+     */
     function newDiagramForm() {
-        currentNs = extractNs(location.href);
-        $drawioCreateForm = jQuery(
+        const currentNs = extractNs(location.href);
+        const $createForm = jQuery(
             '<form>' +
             '<p>Create draw.io diagram in current namespace <strong><span id="drawio__current-ns">' +
             currentNs +
@@ -188,9 +107,9 @@ jQuery( function() {
             '</form>'
         );
 
-        jQuery( $drawioCreateForm ).on( 'submit', createDiagram );
+        jQuery( $createForm ).on( 'submit', createDiagram );
 
-        return $drawioCreateForm;
+        return $createForm;
     }
 
     /**
@@ -211,6 +130,59 @@ jQuery( function() {
             const $nsSpan = jQuery('#drawio__current-ns');
             $nsSpan.text(extractNs(e.target));
         });
+    });
+
+    /**
+     * Returns an edit button with attached click handler that launches the editor
+     *
+     * @param fullId
+     * @returns {jQuery|HTMLElement}
+     */
+    function editDiagramButton(fullId) {
+        const $editButton = jQuery(
+            '<button type="submit" class="drawio-btn" data-id="' +
+            fullId +
+            '">Edit diagram</button>'
+        );
+        jQuery( $editButton ).on( 'click', {fullId: fullId}, launchEditor );
+
+        return $editButton;
+    }
+
+
+
+    // attach edit button to detail view of SVG files
+    $mm_page.on('click', '.panel.filelist .panelContent a', function (e) {
+
+        // observe div.file for mutations
+        const $df = jQuery('div.file');
+        const targetNode = $df[0];
+
+        // observe the target node descendants
+        const config = { childList: true, subtree: true };
+
+        // add edit diagram  button to file actions
+        const addEditButton = function(mutationsList, observer) {
+            for(let mutation of mutationsList) {
+                // div.file has been filled with new content (detail view)
+                if (mutation.type === 'childList') {
+                    const $svgLink = jQuery('a.mf_svg');
+                    // only add buttons to SVG files
+                    if ($svgLink.length !== 0) {
+                        const $actionsList = jQuery('ul.actions');
+                        // disconnect now so we don't observe the mutation we are about to trigger
+                        observer.disconnect();
+                        // FIXME WTF why do they multiply when non-svg link is clicked before?!!!
+                        if ($actionsList.find('button.drawio-btn').length === 0) {
+                            $actionsList.append(editDiagramButton($svgLink.html()));
+                        }
+                    }
+                }
+            }
+        };
+
+        const observer = new MutationObserver(addEditButton);
+        observer.observe(targetNode, config);
     });
 
     // TODO pop-up media manager
