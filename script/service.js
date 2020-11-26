@@ -36,9 +36,11 @@ const handleServiceMessages = function( event ) {
                 .done( function() {
                     jQuery( window ).off( 'message', {fullId: fullId}, handleServiceMessages );
                     jQuery( '#drawio-frame' ).remove();
-                    // media manager window should reflect selection in ns tree
                     const url = new URL(location.href);
-                    url.searchParams.set('ns', ns);
+                    // media manager window should reflect selection in ns tree
+                    if (jQuery('#mediamanager__page').length > 0) {
+                        url.searchParams.set('ns', ns);
+                    }
                     setTimeout( function() {
                         location.assign(url);
                     }, 200 );
