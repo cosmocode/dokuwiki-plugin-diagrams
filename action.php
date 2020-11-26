@@ -11,7 +11,6 @@ class action_plugin_drawio extends DokuWiki_Action_Plugin
     public function register(Doku_Event_Handler $controller)
     {
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'jsinfoEditPermissions');
-        $controller->register_hook('MENU_ITEMS_ASSEMBLY', 'AFTER', $this, 'addCreateButton');
     }
 
     /**
@@ -24,16 +23,5 @@ class action_plugin_drawio extends DokuWiki_Action_Plugin
         global $JSINFO;
         $JSINFO['iseditor'] = auth_quickaclcheck('*') >= AUTH_UPLOAD;
         $JSINFO['sectok'] = getSecurityToken();
-    }
-
-    /**
-     * Add "create diagram" to page tools menu
-     *
-     * @param Doku_Event $event
-     */
-    public function addCreateButton(Doku_Event $event)
-    {
-        if ($event->data['view'] != 'page') return;
-        array_splice($event->data['items'], -1, 0, [new dokuwiki\plugin\drawio\MenuItem()]);
     }
 }

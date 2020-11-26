@@ -37,30 +37,6 @@ jQuery( function() {
         launchEditor({data: {fullId: fullId}});
     });
 
-    // create a new diagram, triggered by click on page tools item
-    jQuery( 'a#drawio-newfile-create' ).on( 'click', function( e ) {
-        e.preventDefault();
-        const ns = NS;
-        let id = prompt( 'Name des neuen Diagramms' );
-        if( !validId(id) ) {
-            alert( 'Dateiname ist leer oder enthält ungültige Zeichen' );
-            return;
-        }
-        id += '.svg';
-        const datastr = doctypeXML +
-            '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1px" height="1px" version="1.1" content="&lt;mxfile userAgent=&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36&quot; version=&quot;7.9.5&quot; editor=&quot;www.draw.io&quot;&gt;&lt;diagram id=&quot;8c846276-93cf-00fc-3101-d1fabb6ae99a&quot; name=&quot;Seite-1&quot;&gt;dZHBEoIgEIafhrtCNXY2q0snD51JEJjQdRBH6+nTwIyxuLB8/7+7sCCSVsPJ0EZegHGNcMQGRA4I43iDd+M2kYcjSbJ3QBjFvGkBuXpyDyNPO8V4GxgtgLaqCWEBdc0LGzBqDPShrQQddm2o4CuQF1Sv6VUxK/0rttHCz1wJOXeOI6/caHEXBrra90OYlO/l5IrOtby/lZRB/4VIhkhqAKyLqiHleprtPDaXd/yjfu5teG1/JIzBUns8BB9Ishc=&lt;/diagram&gt;&lt;/mxfile&gt;" style="background-color: rgb(255, 255, 255);"><defs/><g transform="translate(0.5,0.5)"/></svg>';
-        jQuery.post( getLocalDiagramUrl(ns, id), datastr )
-            .done( function( response ) {
-                if( response.error ) {
-                    alert( 'Fehler beim Speichern: ' + response.error );
-                } else {
-                    alert( 'Diagramm ' + response.id + ' angelegt' );
-                }
-            } ).fail( function() {
-                alert( 'Fehler beim Speichern' );
-            } );
-    } );
-
     /**
      * Launch the editor and create a new diagram
      *
