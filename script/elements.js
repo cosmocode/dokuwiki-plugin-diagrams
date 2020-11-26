@@ -7,11 +7,11 @@ function newDiagramForm() {
     const currentNs = extractNs(location.href);
     const $createForm = jQuery(
         '<form>' +
-        '<p>Create draw.io diagram in current namespace <strong><span id="drawio__current-ns">' +
+        '<p>' + LANG.plugins.drawio.createIntro + ' <strong><span id="drawio__current-ns">' +
         currentNs +
         '</strong></span></p>' +
         '<input type="text" name="drawio-create-filename" id="drawio__create-filename" />' +
-        '<button id="drawio__create">Create</button>' +
+        '<button id="drawio__create">' + LANG.plugins.drawio.createButton + '</button>' +
         '</form>'
     );
 
@@ -41,7 +41,7 @@ function createDiagram(event) {
     const id = jQuery('#drawio__create-filename').val();
 
     if (!validId(id)) {
-        alert('name is empty or contains invalid characters!');
+        alert(LANG.plugins.drawio.errorInvalidId);
         return;
     }
 
@@ -59,7 +59,7 @@ function editDiagramButton(fullId) {
     const $editButton = jQuery(
         '<button type="submit" class="drawio-btn" data-id="' +
         fullId +
-        '">Edit diagram</button>'
+        '">' + LANG.plugins.drawio.editButton + '</button>'
     );
     jQuery( $editButton ).on( 'click', {fullId: fullId}, launchEditor );
 

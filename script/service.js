@@ -6,7 +6,6 @@
 const handleServiceMessages = function( event ) {
     // get diagram info passed to the function
     const fullId = event.data.fullId;
-    console.log('fullId', fullId);
     const {ns, id} = splitFullId(fullId);
 
     const msg = JSON.parse( event.originalEvent.data );
@@ -21,12 +20,12 @@ const handleServiceMessages = function( event ) {
             });
     } else if ( msg.event === 'save' ) {
         drawio.postMessage(
-            JSON.stringify( {action: 'export', format: 'xmlsvg', spin: 'Speichern' } ),
+            JSON.stringify( {action: 'export', format: 'xmlsvg', spin: LANG.plugins.drawio.saving } ),
             '*'
         );
     } else if ( msg.event === 'export' ) {
         if ( msg.format !== 'svg' ) {
-            alert( 'Nicht unterstützt!' );
+            alert( LANG.plugins.drawio.errorUnsupportedFormat );
         } else {
             const datastr = doctypeXML + '\n' +
                 decodeURIComponent( atob( msg.data.split( ',' )[1] ).split( '' ).map( function( c ) {
@@ -45,7 +44,7 @@ const handleServiceMessages = function( event ) {
                         location.assign(url);
                     }, 200 );
                 } ).fail( function() {
-                alert( 'Fehler beim Speichern' );
+                alert( LANG.plugins.drawio.errorSaving );
             } );
         }
     } else if( msg.event === 'exit' ) {
