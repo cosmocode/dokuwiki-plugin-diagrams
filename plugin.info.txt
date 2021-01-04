@@ -1,7 +1,7 @@
 base drawio
 author Innovakom + CosmoCode
 email dokuwiki@cosmocode.de
-date 2020-09-24
+date 2021-01-05
 name Draw.io plugin
-desc Embed Draw.io editor
+desc Embed diagrams.net editor (formerly draw.io)
 url https://innovakom.de

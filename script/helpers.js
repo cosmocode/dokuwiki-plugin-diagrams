@@ -52,3 +52,12 @@ function extractNs(url) {
     };
     return decodeURIComponent(urlParam('ns'));
 }
+
+/**
+ * extract image id from fetch media URL
+ * @param {string} url
+ * @returns {string}
+ */
+function extractIdFromMediaUrl(url) {
+    return url.split('media=')[1].split('&')[0];
+}

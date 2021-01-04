@@ -7,9 +7,9 @@ function newDiagramForm() {
     const currentNs = extractNs(location.href);
     const $createForm = jQuery(
         '<form>' +
-        '<p>' + LANG.plugins.drawio.createIntro + ' <strong><span id="drawio__current-ns">' +
+        '<div>' + LANG.plugins.drawio.createIntro + ' <strong><span id="drawio__current-ns">' +
         currentNs +
-        '</strong></span></p>' +
+        '</strong></span></div>' +
         '<input type="text" name="drawio-create-filename" id="drawio__create-filename" />' +
         '<button id="drawio__create">' + LANG.plugins.drawio.createButton + '</button>' +
         '</form>'

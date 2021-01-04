@@ -4,13 +4,28 @@ jQuery( function() {
     /* DOKUWIKI:include script/elements.js */
 
     // add diagram edit button to all SVGs included in wiki pages
-    if( JSINFO['iseditor'] ) {
-        jQuery( 'img, object' ).filter( '.media, .medialeft, .mediacenter, .mediaright' ).each( function() {
+    const $images = jQuery( 'img, object' ).filter( '.media, .medialeft, .mediacenter, .mediaright' );
+
+    // collect image IDs with file extension
+    const imageIds = $images.map(function (key, image) {
+        return extractIdFromMediaUrl(image.currentSrc);
+    }).toArray();
+
+    let ajaxData = {};
+    ajaxData['call'] = 'plugin_drawio';
+    ajaxData['images'] = imageIds;
+
+    // callback to attach buttons to editable diagrams
+    const attachButtons = function (result) {
+        const diagrams = JSON.parse(result);
+        $images.each( function() {
             const current = jQuery( this );
+            // FIXME what is the difference?
             const src = this.nodeName === 'OBJECT' ? current.attr( 'data' ) : current.attr( 'src' );
-            const extension = src.split( '.' ).pop().toLowerCase();
-            if( extension === 'svg' ) {
-                let $editButton = editDiagramButton(src.split('media=')[1].split('&')[0]);
+
+            const id = extractIdFromMediaUrl(src);
+            if (diagrams.includes(id)) {
+                let $editButton = editDiagramButton(id);
                 if( current.parent()[0].nodeName === 'A' ) {
                     current.parent().after( "<br>", $editButton );
                 } else {
@@ -18,7 +33,14 @@ jQuery( function() {
                 }
             }
         } );
-    }
+    };
+
+    // query backend about permissions and SVG properties before attaching edit buttons
+    jQuery.get(
+        DOKU_BASE + 'lib/exe/ajax.php',
+        ajaxData,
+        attachButtons
+    );
 
     /**
      * Full-page media manager
