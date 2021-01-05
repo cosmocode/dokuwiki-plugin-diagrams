@@ -55,9 +55,14 @@ function extractNs(url) {
 
 /**
  * extract image id from fetch media URL
+ * FIXME handle url rewriting
+ *
  * @param {string} url
  * @returns {string}
  */
 function extractIdFromMediaUrl(url) {
+    if (typeof url === 'undefined') {
+        return '';
+    }
     return url.split('media=')[1].split('&')[0];
 }

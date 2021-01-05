@@ -43,10 +43,11 @@ jQuery( function() {
     );
 
     /**
-     * Full-page media manager
+     * Media manager
      */
     const $mm_page = jQuery('#mediamanager__page');
-    if (!$mm_page.length) return;
+    const $mm_popup = jQuery('#media__manager');
+    if (!$mm_page.length && !$mm_popup.length) return;
 
     const $mm_tree = jQuery("#media__tree");
     $mm_tree.prepend(newDiagramForm());
@@ -62,6 +63,8 @@ jQuery( function() {
         });
     });
 
+    // FIXME
+    if (!$mm_page.length) return;
     // attach edit button to detail view of SVG files
     $mm_page.on('click', '.panel.filelist .panelContent a', function (e) {
 
@@ -95,6 +98,4 @@ jQuery( function() {
         const observer = new MutationObserver(addEditButton);
         observer.observe(targetNode, config);
     });
-
-    // TODO pop-up media manager
 } );

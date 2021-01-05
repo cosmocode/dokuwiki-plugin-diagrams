@@ -43,9 +43,10 @@ const handleServiceMessages = function( event ) {
                     setTimeout( function() {
                         location.assign(url);
                     }, 200 );
-                } ).fail( function() {
-                alert( LANG.plugins.drawio.errorSaving );
-            } );
+                })
+                .fail( function() {
+                    alert( LANG.plugins.drawio.errorSaving );
+                });
         }
     } else if( msg.event === 'exit' ) {
         jQuery( window ).off( 'message', {fullId: fullId}, handleServiceMessages );

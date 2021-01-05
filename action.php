@@ -11,6 +11,7 @@ class action_plugin_drawio extends DokuWiki_Action_Plugin
     public function register(Doku_Event_Handler $controller)
     {
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addJsinfo');
+        $controller->register_hook('MEDIAMANAGER_STARTED', 'AFTER', $this, 'addJsinfo');
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'checkConf');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjax');
     }
