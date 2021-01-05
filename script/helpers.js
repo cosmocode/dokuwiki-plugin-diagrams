@@ -54,15 +54,52 @@ function extractNs(url) {
 }
 
 /**
- * extract image id from fetch media URL
- * FIXME handle url rewriting
+ * extract image id from media URL
  *
  * @param {string} url
  * @returns {string}
  */
 function extractIdFromMediaUrl(url) {
-    if (typeof url === 'undefined') {
-        return '';
+    // handle empty base url
+    if (url.indexOf('http') !== 0 && DOKU_BASE === '/') {
+        url = window.location.origin + url;
     }
-    return url.split('media=')[1].split('&')[0];
+
+    const urlObj = new URL(url);
+    const path = urlObj.pathname;
+    const href = urlObj.href;
+
+    if (path.indexOf('/lib/exe/detail.php/') === 0 || path.indexOf('/lib/exe/fetch.php/') === 0) {
+        // media with internal rewriting
+        const mediaIdMatch = new RegExp(
+            '(?:\\/lib\\/exe\\/detail.php\\/|\\/lib\\/exe\\/fetch.php\\/)([^&]+)$'
+        );
+        const matches = mediaIdMatch.exec(path);
+        if (matches[1]) {
+            return normalizeId(matches[1]);
+        }
+    } else if (path.indexOf('/lib/exe/detail.php') === 0 || path.indexOf('/lib/exe/fetch.php') === 0) {
+        // media without rewriting
+        const mediaIdMatch = new RegExp('(?:media=)([^&]+)');
+        const matches = mediaIdMatch.exec(href);
+        if (matches[1]) {
+            return normalizeId(matches[1]);
+        }
+    } else if (path.indexOf('/_media/') === 0) { // media with .htaccess rewriting
+        const mediaIdMatch = /(?:_media\/)([^&\?]+)/;
+        const matches = href.match(mediaIdMatch);
+        if (matches[1]) {
+            return normalizeId(matches[1]);
+        }
+    } else if (path.indexOf('/_detail/') === 0) { // media with .htaccess rewriting
+        const mediaIdMatch = /(?:_detail\/)([^&\?]+)/;
+        const matches = href.match(mediaIdMatch);
+        if (matches[1]) {
+            return normalizeId(matches[1]);
+        }
+    }
+}
+
+function normalizeId(id) {
+    return ':' + id.replace(/\//g, ":");
 }
