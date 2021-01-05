@@ -1,5 +1,7 @@
 <?php
 
+$lang['missingConfig'] = 'Missing configuration for SVG diagrams: Remeber to add "svg image/svg+xml" to mime.local.conf';
+
 $lang['js']['createButton'] = 'Create';
 $lang['js']['createIntro'] = 'Create draw.io diagram in current namespace';
 $lang['js']['editButton'] = 'Edit diagram';

@@ -10,7 +10,8 @@ class action_plugin_drawio extends DokuWiki_Action_Plugin
      */
     public function register(Doku_Event_Handler $controller)
     {
-        $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'jsinfoEditPermissions');
+        $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addJsinfo');
+        $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'checkConf');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjax');
     }
 
@@ -19,10 +20,23 @@ class action_plugin_drawio extends DokuWiki_Action_Plugin
      *
      * @param Doku_Event $event
      */
-    public function jsinfoEditPermissions(Doku_Event $event)
+    public function addJsinfo(Doku_Event $event)
     {
         global $JSINFO;
         $JSINFO['sectok'] = getSecurityToken();
+    }
+
+    /**
+     * Check if DokuWiki is properly configured to handle SVG diagrams
+     *
+     * @param Doku_Event $event
+     */
+    public function checkConf(Doku_Event $event)
+    {
+        $mime = getMimeTypes();
+        if (!array_key_exists('svg', $mime) || $mime['svg'] !== 'image/svg+xml') {
+            msg($this->getLang('missingConfig'), -1);
+        }
     }
 
     /**
