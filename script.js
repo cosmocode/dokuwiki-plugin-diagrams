@@ -44,28 +44,35 @@ jQuery( function() {
 
     /**
      * Media manager
+     * FIXME this should be moved to a separate file
      */
+
+    /* are we in media manager context? */
     const $mm_page = jQuery('#mediamanager__page');
     const $mm_popup = jQuery('#media__manager');
-    if (!$mm_page.length && !$mm_popup.length) return;
+    const isMMPage = $mm_page.length > 0;
+    const isMMPopup = $mm_popup.length > 0;
+    if (!isMMPage && !isMMPopup) return;
 
+    /* in the namespace tree add a link to create a new diagram */
     const $mm_tree = jQuery("#media__tree");
-    $mm_tree.prepend(newDiagramForm());
-
-    // update diagram NS when clicking in media tree
-    $mm_tree.find('a.idx_dir').each(function (e) {
-        const $this = jQuery( this );
-        $this.on('click', function (e) {
-            e.preventDefault();
-
-            const $nsSpan = jQuery('#drawio__current-ns');
-            $nsSpan.text(extractNs(e.target));
+    const $createLink = jQuery('<a href="#">' + LANG.plugins.drawio.createLink + '</a>').on('click', function (e) {
+        e.preventDefault();
+        newDiagramForm().dialog({
+            title: LANG.plugins.drawio.createLink,
+            width: 600,
+            appendTo: '.dokuwiki',
+            modal: true,
+            open: () => {
+                const ns = isMMPage ? jQuery('.panelHeader h3 strong').html() : jQuery('#media__ns').html();
+                jQuery('#drawio__current-ns').text(ns);
+            },
         });
     });
+    $mm_tree.prepend($createLink);
 
-    // FIXME
-    if (!$mm_page.length) return;
     // attach edit button to detail view of SVG files
+    if (!isMMPage) return;
     $mm_page.on('click', '.panel.filelist .panelContent a', function (e) {
 
         // observe div.file for mutations

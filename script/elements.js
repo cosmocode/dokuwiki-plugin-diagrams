@@ -4,11 +4,9 @@
  * @returns {jQuery|HTMLElement}
  */
 function newDiagramForm() {
-    const currentNs = extractNs(location.href);
     const $createForm = jQuery(
-        '<form>' +
+        '<form style="padding: 0.5em;">' +
         '<div>' + LANG.plugins.drawio.createIntro + ' <strong><span id="drawio__current-ns">' +
-        currentNs +
         '</strong></span></div>' +
         '<input type="text" name="drawio-create-filename" id="drawio__create-filename" />' +
         '<button id="drawio__create">' + LANG.plugins.drawio.createButton + '</button>' +
@@ -28,16 +26,7 @@ function newDiagramForm() {
 function createDiagram(event) {
     event.preventDefault();
 
-    let href;
-    // get namespace selected in ns tree
-    const $selectedNSLink = jQuery('.idx_dir.selected');
-    if ($selectedNSLink && $selectedNSLink.length > 0) {
-        href = $selectedNSLink.attr('href');
-    } else {
-        // FIXME url rewriting?
-        href = location.href;
-    }
-    const ns = extractNs(href);
+    const ns = jQuery('#drawio__current-ns').html();
     const id = jQuery('#drawio__create-filename').val();
 
     if (!validId(id)) {

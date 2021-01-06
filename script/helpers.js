@@ -40,20 +40,6 @@ function splitFullId(fullId) {
 }
 
 /**
- * extract ns param from URL
- *
- * @param url
- * @returns {string}
- */
-function extractNs(url) {
-    const urlParam = function(name) {
-        const results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(url);
-        return results[1] || '';
-    };
-    return decodeURIComponent(urlParam('ns'));
-}
-
-/**
  * extract image id from media URL
  *
  * @param {string} url

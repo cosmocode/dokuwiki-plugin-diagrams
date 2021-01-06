@@ -15,7 +15,7 @@ const handleServiceMessages = function( event ) {
         jQuery.get(DOKU_BASE + 'lib/exe/fetch.php?media=' + fullId, function (data) {
             drawio.postMessage(JSON.stringify({action: 'load', xml: data}), '*');
         }, 'text')
-            .fail(function () { // catch 404, file does not exist yet locally
+            .fail(function () { // catch 404, file does not yet exist locally
                 drawio.postMessage(JSON.stringify({action: 'load', xml: ''}), '*');
             });
     } else if ( msg.event === 'save' ) {
@@ -36,10 +36,8 @@ const handleServiceMessages = function( event ) {
                     jQuery( window ).off( 'message', {fullId: fullId}, handleServiceMessages );
                     jQuery( '#drawio-frame' ).remove();
                     const url = new URL(location.href);
-                    // media manager window should reflect selection in ns tree
-                    if (jQuery('#mediamanager__page').length > 0) {
-                        url.searchParams.set('ns', ns);
-                    }
+                    // media manager window should show current namespace
+                    url.searchParams.set('ns', ns);
                     setTimeout( function() {
                         location.assign(url);
                     }, 200 );
