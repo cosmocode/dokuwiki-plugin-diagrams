@@ -33,8 +33,8 @@ function splitFullId(fullId) {
     let ns = '';
     const idParts = id.split(':');
     if (idParts.length > 1) {
-        ns = idParts[0];
-        id = idParts.slice(1).join(':');
+        id = idParts.pop(idParts);
+        ns = idParts.join(':');
     }
     return {ns: ns, id: id};
 }
