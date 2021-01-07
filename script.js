@@ -53,19 +53,26 @@ jQuery(function () {
 
     /* in the namespace tree add a link to create a new diagram */
     const $mm_tree = jQuery("#media__tree");
-    const $createLink = jQuery('<a href="#">' + LANG.plugins.drawio.createLink + '</a>').on('click', function (e) {
-        e.preventDefault();
-        newDiagramForm().dialog({
-            title: LANG.plugins.drawio.createLink,
-            width: 600,
-            appendTo: '.dokuwiki',
-            modal: true,
-            open: function () {
-                const ns = isMMPage ? jQuery('.panelHeader h3 strong').html() : jQuery('#media__ns').html();
-                jQuery('#drawio__current-ns').text(ns);
-            }
+    const $createLink = jQuery('<a href="#">' + LANG.plugins.drawio.createLink + '</a>')
+        .on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            newDiagramForm().dialog({
+                title: LANG.plugins.drawio.createLink,
+                width: 600,
+                appendTo: '.dokuwiki',
+                modal: true,
+                open: function () {
+                    const ns = isMMPage ? jQuery('.panelHeader h3 strong').text() : jQuery('#media__ns').text();
+                    jQuery('#drawio__current-ns').text(ns);
+                },
+                close: function () {
+                    // do not reuse the dialog
+                    // https://stackoverflow.com/a/2864783
+                    jQuery(this).dialog('destroy').remove();
+                }
+            });
         });
-    });
     $mm_tree.prepend($createLink);
 
     // attach edit button to detail view of SVG files

@@ -5,12 +5,12 @@
  */
 function newDiagramForm() {
     const $createForm = jQuery(
-        '<form style="padding: 0.5em;">' +
-        '<div>' + LANG.plugins.drawio.createIntro + ' <strong><span id="drawio__current-ns">' +
-        '</strong></span></div>' +
-        '<input type="text" name="drawio-create-filename" id="drawio__create-filename" />' +
-        '<button id="drawio__create">' + LANG.plugins.drawio.createButton + '</button>' +
-        '</form>'
+        '<div><form>' +
+        '<p>' + LANG.plugins.drawio.createIntro + ' <strong><span id="drawio__current-ns">' +
+        '</strong></span></p>' +
+        '<input type="text" class="edit" name="drawio-create-filename" id="drawio__create-filename" />' +
+        '<button id="drawio__create" class="edit">' + LANG.plugins.drawio.createButton + '</button>' +
+        '</form></div>'
     );
 
     jQuery( $createForm ).on( 'submit', createDiagram );
