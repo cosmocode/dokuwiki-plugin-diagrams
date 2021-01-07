@@ -6,10 +6,10 @@
 function newDiagramForm() {
     const $createForm = jQuery(
         '<div><form>' +
-        '<p>' + LANG.plugins.drawio.createIntro + ' <strong><span id="drawio__current-ns">' +
+        '<p>' + LANG.plugins.diagrams.createIntro + ' <strong><span id="diagrams__current-ns">' +
         '</strong></span></p>' +
-        '<input type="text" class="edit" name="drawio-create-filename" id="drawio__create-filename" />' +
-        '<button id="drawio__create" class="edit">' + LANG.plugins.drawio.createButton + '</button>' +
+        '<input type="text" class="edit" name="diagrams-create-filename" id="diagrams__create-filename" />' +
+        '<button id="diagrams__create" class="edit">' + LANG.plugins.diagrams.createButton + '</button>' +
         '</form></div>'
     );
 
@@ -26,11 +26,11 @@ function newDiagramForm() {
 function createDiagram(event) {
     event.preventDefault();
 
-    const ns = jQuery('#drawio__current-ns').html();
-    const id = jQuery('#drawio__create-filename').val();
+    const ns = jQuery('#diagrams__current-ns').html();
+    const id = jQuery('#diagrams__create-filename').val();
 
     if (!validId(id)) {
-        alert(LANG.plugins.drawio.errorInvalidId);
+        alert(LANG.plugins.diagrams.errorInvalidId);
         return;
     }
 
@@ -46,9 +46,9 @@ function createDiagram(event) {
  */
 function editDiagramButton(fullId) {
     const $editButton = jQuery(
-        '<button type="submit" class="drawio-btn" data-id="' +
+        '<button type="submit" class="diagrams-btn" data-id="' +
         fullId +
-        '">' + LANG.plugins.drawio.editButton + '</button>'
+        '">' + LANG.plugins.diagrams.editButton + '</button>'
     );
     jQuery( $editButton ).on( 'click', {fullId: fullId}, launchEditor );
 
@@ -60,9 +60,9 @@ function editDiagramButton(fullId) {
  */
 const launchEditor = function(event) {
     const fullId = event.data.fullId;
-    if (!jQuery('#drawio-frame')[0]) {
-        jQuery('body').append('<iframe id="drawio-frame" style="border: 0;position: fixed; top: 0; left: 0; right:0; bottom: 0; width:100%; height:100%; z-index: 9999;"></iframe>');
+    if (!jQuery('#diagrams-frame')[0]) {
+        jQuery('body').append('<iframe id="diagrams-frame" style="border: 0;position: fixed; top: 0; left: 0; right:0; bottom: 0; width:100%; height:100%; z-index: 9999;"></iframe>');
         jQuery(window).on('message', {fullId: fullId}, handleServiceMessages);
-        jQuery('#drawio-frame').attr('src', serviceUrl);
+        jQuery('#diagrams-frame').attr('src', serviceUrl);
     }
 };

@@ -9,23 +9,23 @@ const handleServiceMessages = function( event ) {
     const {ns, id} = splitFullId(fullId);
 
     const msg = JSON.parse( event.originalEvent.data );
-    const drawio = jQuery( '#drawio-frame' )[0].contentWindow;
+    const diagrams = jQuery( '#diagrams-frame' )[0].contentWindow;
     if( msg.event === 'init' ) {
         // try loading existing diagram file
         jQuery.get(DOKU_BASE + 'lib/exe/fetch.php?media=' + fullId, function (data) {
-            drawio.postMessage(JSON.stringify({action: 'load', xml: data}), '*');
+            diagrams.postMessage(JSON.stringify({action: 'load', xml: data}), '*');
         }, 'text')
             .fail(function () { // catch 404, file does not yet exist locally
-                drawio.postMessage(JSON.stringify({action: 'load', xml: ''}), '*');
+                diagrams.postMessage(JSON.stringify({action: 'load', xml: ''}), '*');
             });
     } else if ( msg.event === 'save' ) {
-        drawio.postMessage(
-            JSON.stringify( {action: 'export', format: 'xmlsvg', spin: LANG.plugins.drawio.saving } ),
+        diagrams.postMessage(
+            JSON.stringify( {action: 'export', format: 'xmlsvg', spin: LANG.plugins.diagrams.saving } ),
             '*'
         );
     } else if ( msg.event === 'export' ) {
         if ( msg.format !== 'svg' ) {
-            alert( LANG.plugins.drawio.errorUnsupportedFormat );
+            alert( LANG.plugins.diagrams.errorUnsupportedFormat );
         } else {
             const datastr = doctypeXML + '\n' +
                 decodeURIComponent( atob( msg.data.split( ',' )[1] ).split( '' ).map( function( c ) {
@@ -34,7 +34,7 @@ const handleServiceMessages = function( event ) {
             jQuery.post( getLocalDiagramUrl(ns, id), datastr )
                 .done( function() {
                     jQuery( window ).off( 'message', {fullId: fullId}, handleServiceMessages );
-                    jQuery( '#drawio-frame' ).remove();
+                    jQuery( '#diagrams-frame' ).remove();
                     const url = new URL(location.href);
                     // media manager window should show current namespace
                     url.searchParams.set('ns', ns);
@@ -43,11 +43,11 @@ const handleServiceMessages = function( event ) {
                     }, 200 );
                 })
                 .fail( function() {
-                    alert( LANG.plugins.drawio.errorSaving );
+                    alert( LANG.plugins.diagrams.errorSaving );
                 });
         }
     } else if( msg.event === 'exit' ) {
         jQuery( window ).off( 'message', {fullId: fullId}, handleServiceMessages );
-        jQuery( '#drawio-frame' ).remove();
+        jQuery( '#diagrams-frame' ).remove();
     }
 };

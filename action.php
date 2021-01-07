@@ -1,6 +1,6 @@
 <?php
 
-class action_plugin_drawio extends DokuWiki_Action_Plugin
+class action_plugin_diagrams extends DokuWiki_Action_Plugin
 {
 
     /**
@@ -47,7 +47,7 @@ class action_plugin_drawio extends DokuWiki_Action_Plugin
      */
     public function handleAjax(Doku_Event $event)
     {
-        if ($event->data !== 'plugin_drawio') return;
+        if ($event->data !== 'plugin_diagrams') return;
         $event->preventDefault();
         $event->stopPropagation();
 

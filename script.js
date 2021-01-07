@@ -12,7 +12,7 @@ jQuery(function () {
     }).toArray();
 
     let ajaxData = {};
-    ajaxData['call'] = 'plugin_drawio';
+    ajaxData['call'] = 'plugin_diagrams';
     ajaxData['images'] = imageIds;
 
     // callback to attach buttons to editable diagrams
@@ -53,18 +53,18 @@ jQuery(function () {
 
     /* in the namespace tree add a link to create a new diagram */
     const $mm_tree = jQuery("#media__tree");
-    const $createLink = jQuery('<a href="#">' + LANG.plugins.drawio.createLink + '</a>')
+    const $createLink = jQuery('<a href="#">' + LANG.plugins.diagrams.createLink + '</a>')
         .on('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
             newDiagramForm().dialog({
-                title: LANG.plugins.drawio.createLink,
+                title: LANG.plugins.diagrams.createLink,
                 width: 600,
                 appendTo: '.dokuwiki',
                 modal: true,
                 open: function () {
                     const ns = isMMPage ? jQuery('.panelHeader h3 strong').text() : jQuery('#media__ns').text();
-                    jQuery('#drawio__current-ns').text(ns);
+                    jQuery('#diagrams__current-ns').text(ns);
                 },
                 close: function () {
                     // do not reuse the dialog
@@ -98,7 +98,7 @@ jQuery(function () {
                         // disconnect now so we don't observe the mutation we are about to trigger
                         observer.disconnect();
                         // FIXME why do they multiply when non-svg link is clicked before?!!!
-                        if ($actionsList.find('button.drawio-btn').length === 0) {
+                        if ($actionsList.find('button.diagrams-btn').length === 0) {
                             $actionsList.append(editDiagramButton($svgLink.html()));
                         }
                     }
