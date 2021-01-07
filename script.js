@@ -1,14 +1,14 @@
-jQuery( function() {
+jQuery(function () {
     /* DOKUWIKI:include script/helpers.js */
     /* DOKUWIKI:include script/service.js */
     /* DOKUWIKI:include script/elements.js */
 
     // add diagram edit button to all SVGs included in wiki pages
-    const $images = jQuery( 'img, object' ).filter( '.media, .medialeft, .mediacenter, .mediaright' );
+    const $images = jQuery('img').filter('.media, .medialeft, .mediacenter, .mediaright');
 
     // collect image IDs with file extension
     const imageIds = $images.map(function (key, image) {
-        return extractIdFromMediaUrl(image.currentSrc);
+        return extractIdFromMediaUrl(image.src);
     }).toArray();
 
     let ajaxData = {};
@@ -18,21 +18,18 @@ jQuery( function() {
     // callback to attach buttons to editable diagrams
     const attachButtons = function (result) {
         const diagrams = JSON.parse(result);
-        $images.each( function() {
-            const current = jQuery( this );
-            // FIXME what is the difference?
-            const src = this.nodeName === 'OBJECT' ? current.attr( 'data' ) : current.attr( 'src' );
-
-            const id = extractIdFromMediaUrl(src);
+        $images.each(function () {
+            const id = extractIdFromMediaUrl(this.src);
+            const $current = jQuery(this);
             if (diagrams.includes(id)) {
                 let $editButton = editDiagramButton(id);
-                if( current.parent()[0].nodeName === 'A' ) {
-                    current.parent().after( "<br>", $editButton );
+                if ($current.parent()[0].nodeName === 'A') {
+                    $current.parent().after("<br>", $editButton);
                 } else {
-                    current.after( "<br>", $editButton );
+                    $current.after("<br>", $editButton);
                 }
             }
-        } );
+        });
     };
 
     // query backend about permissions and SVG properties before attaching edit buttons
@@ -63,10 +60,10 @@ jQuery( function() {
             width: 600,
             appendTo: '.dokuwiki',
             modal: true,
-            open: () => {
+            open: function () {
                 const ns = isMMPage ? jQuery('.panelHeader h3 strong').html() : jQuery('#media__ns').html();
                 jQuery('#drawio__current-ns').text(ns);
-            },
+            }
         });
     });
     $mm_tree.prepend($createLink);
@@ -80,11 +77,11 @@ jQuery( function() {
         const targetNode = $df[0];
 
         // observe the target node descendants
-        const config = { childList: true, subtree: true };
+        const config = {childList: true, subtree: true};
 
         // add edit diagram  button to file actions
-        const addEditButton = function(mutationsList, observer) {
-            for(let mutation of mutationsList) {
+        const addEditButton = function (mutationsList, observer) {
+            for (let mutation of mutationsList) {
                 // div.file has been filled with new content (detail view)
                 if (mutation.type === 'childList') {
                     const $svgLink = jQuery('a.mf_svg');
@@ -105,4 +102,4 @@ jQuery( function() {
         const observer = new MutationObserver(addEditButton);
         observer.observe(targetNode, config);
     });
-} );
+});

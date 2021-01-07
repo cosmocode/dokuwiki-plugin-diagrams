@@ -8,7 +8,7 @@ const doctypeXML = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w
  * @returns {boolean}
  */
 function validId(id) {
-    return id.length > 0 && /^[\w][\w\.\-]*$/.test( id )
+    return id.length > 0 && /^[\w][\w\.\-]*$/.test(id)
 }
 
 /**
@@ -46,46 +46,36 @@ function splitFullId(fullId) {
  * @returns {string}
  */
 function extractIdFromMediaUrl(url) {
-    // handle empty base url
-    if (url.indexOf('http') !== 0 && DOKU_BASE === '/') {
-        url = window.location.origin + url;
+    const urlObj = new URL(url);
+    let path = urlObj.pathname;
+    if (path.indexOf(DOKU_BASE) === 0) {
+        path = path.substr(DOKU_BASE.length);
     }
 
-    const urlObj = new URL(url);
-    const path = urlObj.pathname;
-    const href = urlObj.href;
-
-    if (path.indexOf('/lib/exe/detail.php/') === 0 || path.indexOf('/lib/exe/fetch.php/') === 0) {
-        // media with internal rewriting
-        const mediaIdMatch = new RegExp(
-            '(?:\\/lib\\/exe\\/detail.php\\/|\\/lib\\/exe\\/fetch.php\\/)([^&]+)$'
-        );
-        const matches = mediaIdMatch.exec(path);
-        if (matches[1]) {
-            return normalizeId(matches[1]);
-        }
-    } else if (path.indexOf('/lib/exe/detail.php') === 0 || path.indexOf('/lib/exe/fetch.php') === 0) {
-        // media without rewriting
-        const mediaIdMatch = new RegExp('(?:media=)([^&]+)');
-        const matches = mediaIdMatch.exec(href);
-        if (matches[1]) {
-            return normalizeId(matches[1]);
-        }
-    } else if (path.indexOf('/_media/') === 0) { // media with .htaccess rewriting
-        const mediaIdMatch = /(?:_media\/)([^&\?]+)/;
-        const matches = href.match(mediaIdMatch);
-        if (matches[1]) {
-            return normalizeId(matches[1]);
-        }
-    } else if (path.indexOf('/_detail/') === 0) { // media with .htaccess rewriting
-        const mediaIdMatch = /(?:_detail\/)([^&\?]+)/;
-        const matches = href.match(mediaIdMatch);
-        if (matches[1]) {
-            return normalizeId(matches[1]);
-        }
+    if (urlObj.searchParams.get('media') !== null) {
+        // no rewriting
+        return normalizeId(urlObj.searchParams.get('media'));
+    } else if (
+        path.indexOf('lib/exe/detail.php/') === 0 ||
+        path.indexOf('lib/exe/fetch.php/') === 0
+    ) {
+        // internally rewritten URL, cut off three segments
+        return normalizeId(path.split('/').slice(3).join(':'));
+    } else if (
+        path.indexOf('_media/') === 0 ||
+        path.indexOf('_detail/') === 0
+    ) {
+        // .htaccess rewritten URL, cut off one segment
+        return normalizeId(path.split('/').slice(1).join(':'));
     }
 }
 
+/**
+ * Handles IDs with useslash enabled
+ *
+ * @param {string} id
+ * @return {string}
+ */
 function normalizeId(id) {
     return ':' + id.replace(/\//g, ":");
 }
