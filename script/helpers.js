@@ -12,6 +12,14 @@ function validId(id) {
 }
 
 /**
+ * Media Manager encloses the root dir in [] so let's strip that
+ * because it is not a real namespace
+ */
+function cleanNs (text) {
+    return text.replace(/^\[.*\]$/, '');
+}
+
+/**
  * return URL of an existing diagram
  *
  * @param ns

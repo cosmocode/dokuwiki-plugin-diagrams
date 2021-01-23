@@ -63,7 +63,8 @@ jQuery(function () {
                 appendTo: '.dokuwiki',
                 modal: true,
                 open: function () {
-                    const ns = isMMPage ? jQuery('.panelHeader h3 strong').text() : jQuery('#media__ns').text();
+                    const nsText = isMMPage ? jQuery('.panelHeader h3 strong').text() : jQuery('#media__ns').text();
+                    const ns = cleanNs(nsText);
                     jQuery('#diagrams__current-ns').text(ns);
                 },
                 close: function () {
