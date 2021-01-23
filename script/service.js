@@ -4,12 +4,17 @@
  * @param event
  */
 const handleServiceMessages = function( event ) {
+    const diagrams = getDiagramsEditor();
+    // early exit
+    if (!diagrams) {
+        return;
+    }
+
     // get diagram info passed to the function
     const fullId = event.data.fullId;
     const {ns, id} = splitFullId(fullId);
 
     const msg = JSON.parse( event.originalEvent.data );
-    const diagrams = jQuery( '#diagrams-frame' )[0].contentWindow;
     if( msg.event === 'init' ) {
         // try loading existing diagram file
         jQuery.get(DOKU_BASE + 'lib/exe/fetch.php?media=' + fullId, function (data) {
@@ -33,8 +38,6 @@ const handleServiceMessages = function( event ) {
                 } ).join( '' ) );
             jQuery.post( getLocalDiagramUrl(ns, id), datastr )
                 .done( function() {
-                    jQuery( window ).off( 'message', {fullId: fullId}, handleServiceMessages );
-                    jQuery( '#diagrams-frame' ).remove();
                     const url = new URL(location.href);
                     // media manager window should show current namespace
                     url.searchParams.set('ns', ns);
@@ -44,10 +47,12 @@ const handleServiceMessages = function( event ) {
                 })
                 .fail( function() {
                     alert( LANG.plugins.diagrams.errorSaving );
+                })
+                .always( function() {
+                    removeDiagramsEditor(handleServiceMessages);
                 });
         }
     } else if( msg.event === 'exit' ) {
-        jQuery( window ).off( 'message', {fullId: fullId}, handleServiceMessages );
-        jQuery( '#diagrams-frame' ).remove();
+        removeDiagramsEditor(handleServiceMessages);
     }
 };
