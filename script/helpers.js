@@ -2,6 +2,39 @@ const serviceUrl = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1';
 const doctypeXML = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 
 /**
+ * Return the diagrams editor object or false
+ * if it does not exist.
+ *
+ * @returns {boolean|WindowProxy}
+ */
+function getDiagramsEditor() {
+    const diagramsFrame = jQuery('#diagrams-frame');
+    if (diagramsFrame  && typeof diagramsFrame[0] !== 'undefined') {
+        return diagramsFrame[0].contentWindow;
+    }
+    return false;
+}
+
+/**
+ * Detach the message event handler and remove the editor
+ *
+ * @param handler
+ */
+function removeDiagramsEditor(handler) {
+    jQuery(window).off( 'message', handler );
+    jQuery('#diagrams-frame').remove();
+}
+
+/**
+ * Explicitly disable caching of the AJAX request.
+ */
+function disableRequestCaching() {
+    jQuery.ajaxSetup({
+        cache: false,
+    });
+}
+
+/**
  * check if name/id of new diagram is valid
  *
  * @param id
