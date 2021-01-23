@@ -26,6 +26,15 @@ function removeDiagramsEditor(handler) {
 }
 
 /**
+ * Explicitly disable caching of the AJAX request.
+ */
+function disableRequestCaching() {
+    jQuery.ajaxSetup({
+        cache: false,
+    });
+}
+
+/**
  * check if name/id of new diagram is valid
  *
  * @param id

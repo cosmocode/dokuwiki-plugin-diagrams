@@ -10,6 +10,9 @@ const handleServiceMessages = function( event ) {
         return;
     }
 
+    // some browsers stubbornly cache request data and mess up subsequent edits
+    disableRequestCaching();
+
     // get diagram info passed to the function
     const fullId = event.data.fullId;
     const {ns, id} = splitFullId(fullId);
