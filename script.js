@@ -3,12 +3,12 @@ jQuery(function () {
     /* DOKUWIKI:include script/service.js */
     /* DOKUWIKI:include script/elements.js */
 
-    // add diagram edit button to all SVGs included in wiki pages
-    const $images = jQuery('img').filter('.media, .medialeft, .mediacenter, .mediaright');
+    // add diagram edit button to diagram SVGs included in wiki pages
+    const $images = jQuery('object').filter('.diagrams-svg');
 
     // collect image IDs with file extension
     const imageIds = $images.map(function (key, image) {
-        return extractIdFromMediaUrl(image.src);
+        return extractIdFromMediaUrl(image.data);
     }).toArray();
 
     let ajaxData = {};
@@ -19,7 +19,7 @@ jQuery(function () {
     const attachButtons = function (result) {
         const diagrams = JSON.parse(result);
         $images.each(function () {
-            const id = extractIdFromMediaUrl(this.src);
+            const id = extractIdFromMediaUrl(this.data);
             const $current = jQuery(this);
             if (diagrams.includes(id)) {
                 let $editButton = editDiagramButton(id);
@@ -109,5 +109,13 @@ jQuery(function () {
 
         const observer = new MutationObserver(addEditButton);
         observer.observe(targetNode, config);
+    });
+});
+
+// open links in diagrams in the browser window instead of SVG frame
+// TODO this will not work with DokuWiki master as of February 2021 (contentDocument is null)
+jQuery(window).on('load', function() {
+    jQuery('object.diagrams-svg').each( function() {
+        jQuery(this.contentDocument).find('svg').find('a').attr('target', '_parent');
     });
 });

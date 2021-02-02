@@ -58,8 +58,7 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
     }
 
     /**
-     * Return an array of diagrams that are editable,
-     * based on ACLs and image content ('embed.diagrams.net' or 'draw.io')
+     * Return an array of diagrams editable by the current user
      *
      * @param array $images
      * @return array
@@ -69,30 +68,32 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
         $editable = [];
 
         foreach ($images as $image) {
-            // skip non SVG files
-            if (strpos($image, '.svg', - strlen('.svg')) === false) {
-                continue;
-            }
-            // check ACLs
-            if (auth_quickaclcheck($image) < AUTH_UPLOAD) {
-                continue;
-            }
-            // is it our diagram?
-            global $conf;
-            $file = DOKU_INC .
-                $conf['savedir'] .
-                DIRECTORY_SEPARATOR .
-                'media' .
-                DIRECTORY_SEPARATOR .
-                preg_replace(['/:/'], [DIRECTORY_SEPARATOR], $image);
-
-            $begin = file_get_contents($file, false, null, 0, 500);
-            // TODO find a better way to detect diagrams
-            if (strpos($begin, 'embed.diagrams.net') || strpos($begin, 'draw.io')) {
+            if (auth_quickaclcheck($image) >= AUTH_UPLOAD && $this->isDiagram($image)) {
                 $editable[] = $image;
             }
         }
 
         return $editable;
+    }
+
+    /**
+     * Return true if the image is recognized as our diagram
+     * based on content ('embed.diagrams.net' or 'draw.io')
+     *
+     * @param string $image image id
+     * @return bool
+     */
+    protected function isDiagram($image)
+    {
+        global $conf;
+        $file = DOKU_INC .
+            $conf['savedir'] .
+            DIRECTORY_SEPARATOR .
+            'media' .
+            DIRECTORY_SEPARATOR .
+            preg_replace(['/:/'], [DIRECTORY_SEPARATOR], $image);
+
+        $begin = file_get_contents($file, false, null, 0, 500);
+        return strpos($begin, 'embed.diagrams.net') || strpos($begin, 'draw.io');
     }
 }
