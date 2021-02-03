@@ -58,6 +58,7 @@ class syntax_plugin_diagrams extends DokuWiki_Syntax_Plugin {
         $renderer->doc .=
             '<object data="'
             . ml($data['src'])
+            . '&cache=nocache'
             .'" type="image/svg+xml" class="diagrams-svg media'
             . $data['align']
             .'" ></object>';
