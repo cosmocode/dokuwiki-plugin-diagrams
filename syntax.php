@@ -55,13 +55,11 @@ class syntax_plugin_diagrams extends DokuWiki_Syntax_Plugin {
     {
         if ($format !== 'xhtml') return false;
 
-        $renderer->doc .=
-            '<object data="'
-            . ml($data['src'])
-            . '&cache=nocache'
-            .'" type="image/svg+xml" class="diagrams-svg media'
-            . $data['align']
-            .'" ></object>';
+        $width = $data['width'] ? 'width="' . $data['width'] . '"' : '';
+        $height = $data['height'] ? 'height="' . $data['height'] . '"' : '';
+
+        $tag = '<object data="%s&cache=nocache" type="image/svg+xml" class="diagrams-svg media%s" %s %s></object>';
+        $renderer->doc .= sprintf($tag, ml($data['src']), $data['align'], $width, $height);
 
         return true;
     }
