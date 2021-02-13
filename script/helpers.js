@@ -1,4 +1,3 @@
-const serviceUrl = 'https://embed.diagrams.net/?embed=1&proto=json&spin=1';
 const doctypeXML = '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
 
 /**
