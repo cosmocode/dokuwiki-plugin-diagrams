@@ -63,6 +63,6 @@ const launchEditor = function(event) {
     if (!jQuery('#diagrams-frame')[0]) {
         jQuery('body').append('<iframe id="diagrams-frame" style="border: 0;position: fixed; top: 0; left: 0; right:0; bottom: 0; width:100%; height:100%; z-index: 9999;"></iframe>');
         jQuery(window).on('message', {fullId: fullId}, handleServiceMessages);
-        jQuery('#diagrams-frame').attr('src', serviceUrl);
+        jQuery('#diagrams-frame').attr('src', JSINFO['plugins']['diagrams']['service_url']);
     }
 };
