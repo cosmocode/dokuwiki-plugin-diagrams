@@ -44,7 +44,8 @@ class syntax_plugin_diagrams extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Render the diagram SVG as <object> instead of <img> to allow links
+     * Render the diagram SVG as <object> instead of <img> to allow links,
+     * except when rendering to a PDF
      *
      * @param string $format
      * @param Doku_Renderer $renderer
@@ -55,11 +56,22 @@ class syntax_plugin_diagrams extends DokuWiki_Syntax_Plugin {
     {
         if ($format !== 'xhtml') return false;
 
-        $width = $data['width'] ? 'width="' . $data['width'] . '"' : '';
-        $height = $data['height'] ? 'height="' . $data['height'] . '"' : '';
-
-        $tag = '<object data="%s&cache=nocache" type="image/svg+xml" class="diagrams-svg media%s" %s %s></object>';
-        $renderer->doc .= sprintf($tag, ml($data['src']), $data['align'], $width, $height);
+        if(is_a($renderer, 'renderer_plugin_dw2pdf')) {
+            $imageAttributes = array(
+                'class'   => 'media',
+                'src'     => ml($data['src']),
+                'width'   => $data['width'],
+                'height'  => $data['height'],
+                'align'   => $data['align'],
+                'title'   => $data['title']
+            );
+            $renderer->doc .= '<img '. buildAttributes($imageAttributes) . '/>';
+        } else {
+            $width = $data['width'] ? 'width="' . $data['width'] . '"' : '';
+            $height = $data['height'] ? 'height="' . $data['height'] . '"' : '';
+            $tag = '<object data="%s&cache=nocache" type="image/svg+xml" class="diagrams-svg media%s" %s %s></object>';
+            $renderer->doc .= sprintf($tag, ml($data['src']), $data['align'], $width, $height);
+        }
 
         return true;
     }
