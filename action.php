@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Action component of diagrams plugin
+ */
 class action_plugin_diagrams extends DokuWiki_Action_Plugin
 {
 
@@ -17,14 +20,14 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
     }
 
     /**
-     * Add security token to JSINFO, used for uploading
+     * Add data to JSINFO: full service URL and security token used for uploading
      *
      * @param Doku_Event $event
      */
     public function addJsinfo(Doku_Event $event)
     {
         global $JSINFO;
-        $JSINFO['sectok'] = getSecurityToken();        
+        $JSINFO['sectok'] = getSecurityToken();
         $JSINFO['plugins']['diagrams']['service_url'] = $this->getConf('service_url');
     }
 
@@ -87,6 +90,10 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
     protected function isDiagram($image)
     {
         global $conf;
+        // strip nocache parameters from image
+        $image = explode('&', $image);
+        $image = $image[0];
+
         $file = DOKU_INC .
             $conf['savedir'] .
             DIRECTORY_SEPARATOR .
