@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Action component of diagrams plugin
+ */
 class action_plugin_diagrams extends DokuWiki_Action_Plugin
 {
 
@@ -86,6 +89,10 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
     protected function isDiagram($image)
     {
         global $conf;
+        // strip nocache parameters from image
+        $image = explode('&', $image);
+        $image = $image[0];
+
         $file = DOKU_INC .
             $conf['savedir'] .
             DIRECTORY_SEPARATOR .
