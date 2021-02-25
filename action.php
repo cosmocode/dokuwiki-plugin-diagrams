@@ -28,6 +28,7 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
     {
         global $JSINFO;
         $JSINFO['sectok'] = getSecurityToken();
+        $JSINFO['plugins']['diagrams']['service_url'] = $this->getConf('service_url');
     }
 
     /**
@@ -101,6 +102,8 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
             preg_replace(['/:/'], [DIRECTORY_SEPARATOR], $image);
 
         $begin = file_get_contents($file, false, null, 0, 500);
-        return strpos($begin, 'embed.diagrams.net') || strpos($begin, 'draw.io');
+        $confServiceUrl = $this->getConf('service_url'); // like "https://diagrams.xyz.org/?embed=1&..."
+        $serviceHost = parse_url($confServiceUrl, PHP_URL_HOST); // Host-Portion of the Url, e.g. "diagrams.xyz.org"
+        return strpos($begin, 'embed.diagrams.net') || strpos($begin, 'draw.io') || strpos($begin, $serviceHost);
     }
 }
