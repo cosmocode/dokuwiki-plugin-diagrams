@@ -20,7 +20,7 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
     }
 
     /**
-     * Add security token to JSINFO, used for uploading
+     * Add data to JSINFO: full service URL and security token used for uploading
      *
      * @param Doku_Event $event
      */
