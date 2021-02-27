@@ -1,6 +1,6 @@
 <?php
 
-$lang['missingConfig'] = 'Missing configuration for SVG diagrams: Remeber to add "svg image/svg+xml" to mime.local.conf';
+$lang['missingConfig'] = 'Missing configuration for SVG diagrams: Remember to add "svg image/svg+xml" to mime.local.conf';
 
 $lang['js']['createButton'] = 'Create';
 $lang['js']['createLink'] = 'Create a diagram';
