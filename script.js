@@ -78,7 +78,7 @@ jQuery(function () {
 
     // attach edit button to detail view of SVG files
     if (!isMMPage) return;
-    $mm_page.on('click', '.panel.filelist .panelContent a', function (e) {
+    $mm_page.on('click', '.filelist .panelContent a', function (e) {
 
         // observe div.file for mutations
         const $df = jQuery('div.file');
