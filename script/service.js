@@ -35,10 +35,10 @@ const handleServiceMessages = function( event ) {
         if ( msg.format !== 'svg' ) {
             alert( LANG.plugins.diagrams.errorUnsupportedFormat );
         } else {
-            const datastr = doctypeXML + '\n' +
+            const datastr = (doctypeXML + '\n' +
                 decodeURIComponent( atob( msg.data.split( ',' )[1] ).split( '' ).map( function( c ) {
                     return '%' + ( '00' + c.charCodeAt( 0 ).toString( 16 ) ).slice( -2 );
-                } ).join( '' ) );
+                } ).join( '' ) )).replace(/width=".*" height=".*" viewBox="/g, 'width="100%" height="auto" viewBox="');
             jQuery.post( getLocalDiagramUrl(ns, id), datastr )
                 .done( function() {
                     const url = new URL(location.href);
