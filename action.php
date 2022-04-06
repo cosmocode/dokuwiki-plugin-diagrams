@@ -94,12 +94,12 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
         $image = explode('&', $image);
         $image = $image[0];
 
-        $file = DOKU_INC .
+        $file = init_path(
             $conf['savedir'] .
             DIRECTORY_SEPARATOR .
             'media' .
-            DIRECTORY_SEPARATOR .
-            preg_replace(['/:/'], [DIRECTORY_SEPARATOR], $image);
+            preg_replace(['/:/'], [DIRECTORY_SEPARATOR], $image)
+        );
 
         $begin = file_get_contents($file, false, null, 0, 500);
         $confServiceUrl = $this->getConf('service_url'); // like "https://diagrams.xyz.org/?embed=1&..."
