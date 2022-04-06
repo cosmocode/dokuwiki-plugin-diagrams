@@ -72,7 +72,7 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
         $editable = [];
 
         foreach ($images as $image) {
-            if (auth_quickaclcheck($image) >= AUTH_UPLOAD && $this->isDiagram($image)) {
+            if (auth_quickaclcheck(cleanId($image)) >= AUTH_UPLOAD && $this->isDiagram($image)) {
                 $editable[] = $image;
             }
         }
