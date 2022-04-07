@@ -53,7 +53,7 @@ jQuery(function () {
 
     /* in the namespace tree add a link to create a new diagram */
     const $mm_tree = jQuery("#media__tree");
-    const $createLink = jQuery('<a href="#">' + LANG.plugins.diagrams.createLink + '</a>')
+    const $createLink = jQuery('<a id="plugin__diagrams-new" href="#">' + LANG.plugins.diagrams.createLink + '</a>')
         .on('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
