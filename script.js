@@ -12,7 +12,7 @@ jQuery(function () {
     }).toArray();
 
     let ajaxData = {};
-    ajaxData['call'] = 'plugin_diagrams';
+    ajaxData['call'] = 'plugin_diagrams_images';
     ajaxData['images'] = imageIds;
 
     // callback to attach buttons to editable diagrams
@@ -65,7 +65,24 @@ jQuery(function () {
                 open: function () {
                     const nsText = isMMPage ? jQuery('.panelHeader h3 strong').text() : jQuery('#media__ns').text();
                     const ns = cleanNs(nsText);
-                    jQuery('#diagrams__current-ns').text(ns);
+                    const $intro = jQuery('#diagrams__current-ns');
+                    $intro.text(ns);
+
+                    // check ACLs before displaying the form
+                    let ajaxData = {};
+                    ajaxData['call'] = 'plugin_diagrams_acl';
+                    ajaxData['ns'] = ns;
+                    jQuery.get(
+                        DOKU_BASE + 'lib/exe/ajax.php',
+                        ajaxData,
+                        function (result) {
+                            if (JSON.parse(result) !== true) {
+                                $intro.after('<br>' + LANG.plugins.diagrams.createForbidden);
+                                jQuery('#diagrams__create-filename').remove();
+                                jQuery('#diagrams__create').remove();
+                            }
+                        }
+                    );
                 },
                 close: function () {
                     // do not reuse the dialog

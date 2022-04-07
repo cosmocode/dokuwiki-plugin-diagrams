@@ -48,7 +48,7 @@ function validId(id) {
  * because it is not a real namespace
  */
 function cleanNs (text) {
-    return text.replace(/^\[.*\]$/, '');
+    return text.replace(/^:|\[.*\]$/, '');
 }
 
 /**

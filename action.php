@@ -16,7 +16,8 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addJsinfo');
         $controller->register_hook('MEDIAMANAGER_STARTED', 'AFTER', $this, 'addJsinfo');
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'checkConf');
-        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjax');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjaxImages');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjaxAcl');
     }
 
     /**
@@ -49,9 +50,9 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
      *
      * @param Doku_Event $event
      */
-    public function handleAjax(Doku_Event $event)
+    public function handleAjaxImages(Doku_Event $event)
     {
-        if ($event->data !== 'plugin_diagrams') return;
+        if ($event->data !== 'plugin_diagrams_images') return;
         $event->preventDefault();
         $event->stopPropagation();
 
@@ -59,6 +60,23 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
         $images = $INPUT->arr('images');
 
         echo json_encode($this->editableDiagrams($images));
+    }
+
+    /**
+     * Check ACL for supplied namespace
+     *
+     * @param Doku_Event $event
+     */
+    public function handleAjaxAcl(Doku_Event $event)
+    {
+        if ($event->data !== 'plugin_diagrams_acl') return;
+        $event->preventDefault();
+        $event->stopPropagation();
+
+        global $INPUT;
+        $ns = $INPUT->str('ns');
+
+        echo json_encode(auth_quickaclcheck($ns . ':*') >= AUTH_UPLOAD);
     }
 
     /**
