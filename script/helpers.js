@@ -117,5 +117,5 @@ function extractIdFromMediaUrl(url) {
  * @return {string}
  */
 function normalizeId(id) {
-    return ':' + id.replace(/\//g, ":");
+    return id.replace(/\//g, ":");
 }
