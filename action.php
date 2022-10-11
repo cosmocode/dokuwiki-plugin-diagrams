@@ -126,9 +126,8 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
         $image = $image[0];
 
         $file = init_path(
-            $conf['savedir'] .
+            $conf['mediadir'] .
             DIRECTORY_SEPARATOR .
-            'media' .
             preg_replace(['/:/'], [DIRECTORY_SEPARATOR], $image)
         );
 
