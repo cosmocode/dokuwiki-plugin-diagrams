@@ -88,7 +88,9 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
      */
     public function handleCSP(Doku_Event $event)
     {
-        $event->data['csp']['img-src'] = "self data:";
+        if ($this->isDiagram($event->data['media'])) {
+            $event->data['csp']['img-src'] = "self data:";
+        }
     }
 
 
