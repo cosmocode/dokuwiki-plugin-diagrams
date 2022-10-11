@@ -18,6 +18,7 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'checkConf');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjaxImages');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleAjaxAcl');
+        $controller->register_hook('MEDIA_SENDFILE', 'BEFORE', $this, 'handleCSP');
     }
 
     /**
@@ -78,6 +79,18 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
 
         echo json_encode(auth_quickaclcheck($ns . ':*') >= AUTH_UPLOAD);
     }
+
+    /**
+     * Add CSP img-src directive to allow loading images from data source
+     *
+     * @param Doku_Event $event
+     * @return void
+     */
+    public function handleCSP(Doku_Event $event)
+    {
+        $event->data['csp']['img-src'] = "self data:";
+    }
+
 
     /**
      * Return an array of diagrams editable by the current user
