@@ -90,6 +90,7 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
     {
         if ($this->isDiagram($event->data['media'])) {
             $event->data['csp']['img-src'] = "self data:";
+            $event->data['csp']['sandbox'] = "allow-popups allow-top-navigation allow-same-origin";
         }
     }
 
