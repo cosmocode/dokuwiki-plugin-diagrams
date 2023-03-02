@@ -130,9 +130,8 @@ jQuery(function () {
 });
 
 // open links in diagrams in the browser window instead of SVG frame
-// TODO this will not work with DokuWiki master as of February 2021 (contentDocument is null)
 jQuery(window).on('load', function() {
     jQuery('object.diagrams-svg').each( function() {
-        jQuery(this.contentDocument).find('svg').find('a').attr('target', '_parent');
+        jQuery(this.contentDocument).find('svg').find('a').attr({'target': '_parent', 'style': 'pointer-events: all;'});
     });
 });
