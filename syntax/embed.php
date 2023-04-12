@@ -3,7 +3,7 @@
 /**
  * Class syntax_plugin_diagrams
  */
-class syntax_plugin_diagrams extends DokuWiki_Syntax_Plugin {
+class syntax_plugin_diagrams_embed extends DokuWiki_Syntax_Plugin {
 
     /**
      * @inheritdoc
@@ -26,7 +26,7 @@ class syntax_plugin_diagrams extends DokuWiki_Syntax_Plugin {
      */
     public function connectTo($mode)
     {
-        $this->Lexer->addSpecialPattern('\{\{[^\}]+(?:\.svg)[^\}]*?\}\}',$mode,'plugin_diagrams');
+        $this->Lexer->addSpecialPattern('\{\{[^\}]+(?:\.svg)[^\}]*?\}\}',$mode,'plugin_diagrams_embed');
     }
 
     /**
