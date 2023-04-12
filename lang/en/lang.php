@@ -9,5 +9,6 @@ $lang['js']['createForbidden'] = 'You do not have sufficient permissions';
 $lang['js']['editButton'] = 'Edit diagram';
 $lang['js']['errorInvalidId'] = 'Name is empty or contains invalid characters!';
 $lang['js']['errorSaving'] = 'Saving failed';
+$lang['js']['errorLoading'] = 'Loading failed';
 $lang['js']['errorUnsupportedFormat'] = 'Unsupported file format!';
 $lang['js']['saving'] = 'Saving';
