@@ -137,6 +137,7 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
             preg_replace(['/:/'], [DIRECTORY_SEPARATOR], $image)
         );
 
+        // FIXME replace with helper_plugin_diagrams::isDiagram()
         if (!is_file($file)) return false;
         $begin = file_get_contents($file, false, null, 0, 500);
         $confServiceUrl = $this->getConf('service_url'); // like "https://diagrams.xyz.org/?embed=1&..."

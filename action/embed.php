@@ -12,6 +12,8 @@ use dokuwiki\plugin\diagrams\Diagrams;
  */
 class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
 {
+    /** @var helper_plugin_diagrams */
+    protected $helper;
 
     /** @inheritDoc */
     public function register(Doku_Event_Handler $controller)
@@ -21,6 +23,8 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
 
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleLoad');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleSave');
+
+        $this->helper = plugin_load('helper', 'diagrams');
     }
 
     /**
@@ -59,10 +63,15 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
             http_status(423, 'Page Locked');
             return;
         }
-        lock($id); // FIXME we probably need some periodic lock renewal while editing?
 
-        header('Content-Type: image/svg+xml');
         $svg = rawWiki($id);
+        if(!$this->helper->isDiagram($svg)) {
+            http_status(400);
+            return;
+        }
+
+        lock($id); // FIXME we probably need some periodic lock renewal while editing?
+        header('Content-Type: image/svg+xml');
         echo substr($svg, $pos, $len);
     }
 
@@ -104,6 +113,11 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         }
 
         if (empty($svg) || substr($svg, 0, 4) !== '<svg') {
+            http_status(400);
+            return;
+        }
+
+        if(!$this->helper->isDiagram($svg)) {
             http_status(400);
             return;
         }
