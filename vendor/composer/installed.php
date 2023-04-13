@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'name' => 'cosmocode/dokuwiki-plugin-diagrams',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => 'bc39777fa364696c1e0053573aadb2d26ce57bd2',
+        'type' => 'project',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        'cosmocode/dokuwiki-plugin-diagrams' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => 'bc39777fa364696c1e0053573aadb2d26ce57bd2',
+            'type' => 'project',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'enshrined/svg-sanitize' => array(
+            'pretty_version' => '0.16.0',
+            'version' => '0.16.0.0',
+            'reference' => '239e257605e2141265b429e40987b2ee51bba4b4',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../enshrined/svg-sanitize',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'ezyang/htmlpurifier' => array(
+            'pretty_version' => 'v4.16.0',
+            'version' => '4.16.0.0',
+            'reference' => '523407fb06eb9e5f3d59889b3978d5bfe94299c8',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ezyang/htmlpurifier',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);

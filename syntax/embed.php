@@ -1,6 +1,8 @@
 <?php
 
+use dokuwiki\Logger;
 use dokuwiki\plugin\diagrams\Diagrams;
+use enshrined\svgSanitize\Sanitizer;
 
 /**
  * DokuWiki Plugin diagrams (Syntax Component)
@@ -34,6 +36,8 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
         // only register if embed mode is enabled
         if(!$this->getConf('mode') & Diagrams::MODE_EMBED) return;
 
+        // auto load sanitizer
+        require_once __DIR__ . '/../vendor/autoload.php';
         $this->Lexer->addSpecialPattern('<diagram(?: .*)?>.*?(?:</diagram>)', $mode, 'plugin_diagrams_embed');
     }
 
@@ -43,6 +47,16 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
         [$open, $rest] = sexplode('>', $match, 2);
         $params = substr($open, 9);
         $svg = substr($rest, 0, -10);
+
+        // sanitize svg
+        $sanitizer = new Sanitizer();
+        $svg = $sanitizer->sanitize($svg);
+
+        if(!$svg) {
+            global $ID;
+            Logger::debug('diagrams: invalid SVG on '.$ID, $sanitizer->getXmlIssues());
+            return false;
+        }
 
         $data = [
             'svg' => $svg,
@@ -68,16 +82,26 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
     public function render($format, Doku_Renderer $renderer, $data)
     {
         if ($format !== 'xhtml') return false;
-
-        // FIXME currently insecure!
-        // maybe use https://github.com/darylldoyle/svg-sanitizer
+        if(!$data) return false;
 
         $style = '';
-        if ($data['width']) $style .= 'width: ' . $data['width'] . 'px; ';
-        if ($data['height']) $style .= 'height: ' . $data['height'] . 'px; ';
+        if($data['width'] && $data['height']) {
+            $style .= 'width: ' . $data['width'] . 'px; ';
+            $style .= 'height: ' . $data['height'] . 'px; ';
+            $class = 'fixedSize';
+        } else {
+            $class = 'autoSize';
+        }
 
-        $tag = '<div class="plugin_diagrams_inline media%s" style="%s">%s</divobject>';
-        $renderer->doc .= sprintf($tag, $data['align'], $style, $data['svg']);
+        $attr = [
+            'class' => "plugin_diagrams_embed $class media" . $data['align'],
+            'style' => $style,
+            'data-pos' => $data['pos'],
+            'data-len' => $data['len'],
+        ];
+
+        $tag = '<div %s>%s</div>';
+        $renderer->doc .= sprintf($tag, buildAttributes($attr), $data['svg']);
 
         return true;
     }
