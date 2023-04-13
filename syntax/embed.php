@@ -1,5 +1,7 @@
 <?php
 
+use dokuwiki\plugin\diagrams\Diagrams;
+
 /**
  * DokuWiki Plugin diagrams (Syntax Component)
  *
@@ -29,7 +31,9 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
     /** @inheritDoc */
     public function connectTo($mode)
     {
-        // FIXME only allow this when enabled in config
+        // only register if embed mode is enabled
+        if(!$this->getConf('mode') & Diagrams::MODE_EMBED) return;
+
         $this->Lexer->addSpecialPattern('<diagram(?: .*)?>.*?(?:</diagram>)', $mode, 'plugin_diagrams_embed');
     }
 

@@ -1,4 +1,7 @@
 <?php
+
+use dokuwiki\plugin\diagrams\Diagrams;
+
 /**
  * DokuWiki Plugin diagrams (Action Component)
  *
@@ -13,8 +16,11 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
     /** @inheritDoc */
     public function register(Doku_Event_Handler $controller)
     {
-        // FIXME only register this when enabled in config
+        // only register if embed mode is enabled
+        if(!$this->getConf('mode') & Diagrams::MODE_EMBED) return;
+
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleLoad');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleSave');
     }
 
     /**

@@ -5,4 +5,9 @@
  * @author Chris G. <githubkoma@weycloud.de>
  */
 
-$lang['service_url']              = 'Defines which diagrams.net editor url is used.';
+$lang['service_url'] = 'Defines which diagrams.net editor url is used.';
+$lang['mode'] = 'How should diagrams be stored? Please note that page embedding has potential security implications - read the documentation before enabling.';
+
+$lang['mode_o_1'] = 'Media Files';
+$lang['mode_o_2'] = 'Embedded in the page';
+$lang['mode_o_3'] = 'Allow both';
