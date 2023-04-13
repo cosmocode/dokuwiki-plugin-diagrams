@@ -2,6 +2,8 @@
 
 $lang['missingConfig'] = 'Missing configuration for SVG diagrams: Remember to add "svg image/svg+xml" to mime.local.conf';
 
+$lang['embedSaveSummary'] = 'Embedded diagram updated';
+
 $lang['js']['createButton'] = 'Create';
 $lang['js']['createLink'] = 'Create a diagram';
 $lang['js']['createIntro'] = 'Create a diagram in current namespace';

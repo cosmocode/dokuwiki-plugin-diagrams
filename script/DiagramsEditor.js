@@ -69,12 +69,16 @@ class DiagramsEditor {
      * Initialize the editor for editing an embedded diagram
      *
      * @param {string} pageid The page ID to on which the diagram is embedded
-     * @param {int} index The index of the diagram on the page (0-based)
+     * @param {int} position The position of the diagram in the page
+     * @param {int} length The length of the diagram in the page
      */
-    async editEmbed(pageid, index) {
-        this.#saveCallback = (svg) => this.#saveEmbed(pageid, index, svg);
+    async editEmbed(pageid, position, length) {
+        this.#saveCallback = (svg) => this.#saveEmbed(pageid, position, length, svg);
 
-        const url = 'FIXME'; // FIXME we need a renderer endpoint that parses SVG out of a page
+        const url = DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_embed_load' +
+            '&id' + encodeURIComponent(pageid) +
+            '&pos=' + encodeURIComponent(position) +
+            '&len=' + encodeURIComponent(length);
 
         const response = await fetch(url, {
             method: 'GET',
@@ -127,14 +131,23 @@ class DiagramsEditor {
     }
 
     /**
+     * Saves a diagram as an embedded diagram
+     *
+     * This replaces the previous diagram at the given postion
      *
      * @param {string} pageid The page ID on which the diagram is embedded
-     * @param {string} index The index of the diagram on the page (0-based)
+     * @param {int} position The position of the diagram in the page
+     * @param {int} length The length of the diagram as it was before
      * @param {string} svg The SVG raw data to save
      * @returns {Promise<boolean>}
      */
-    async #saveEmbed(pageid, index, svg) {
-        const uploadUrl = 'FIXME'; // FIXME we need an endpoint that saves an embedded diagram
+    async #saveEmbed(pageid, position, length, svg) {
+        const uploadUrl = DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_embed_save' +
+            '&id=' + encodeURIComponent(pageid) +
+            '&pos=' + encodeURIComponent(position) +
+            '&len=' + encodeURIComponent(length) +
+            '&svg=' + encodeURIComponent(svg) +
+            '&sectok=' + JSINFO['sectok'];
 
         const response = await fetch(uploadUrl, {
             method: 'POST',

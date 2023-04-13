@@ -1,78 +1,81 @@
 <?php
 
 /**
- * Class syntax_plugin_diagrams
+ * DokuWiki Plugin diagrams (Syntax Component)
+ *
+ * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
+ * @author  Innovakom + CosmoCode <dokuwiki@cosmocode.de>
  */
-class syntax_plugin_diagrams_embed extends DokuWiki_Syntax_Plugin {
-
-    /**
-     * @inheritdoc
-     */
+class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
+{
+    /** @inheritDoc */
     public function getType()
     {
         return 'substition';
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritDoc */
+    public function getPType()
+    {
+        return 'block';
+    }
+
+    /** @inheritDoc */
     public function getSort()
     {
         return 319;
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritDoc */
     public function connectTo($mode)
     {
-        $this->Lexer->addSpecialPattern('\{\{[^\}]+(?:\.svg)[^\}]*?\}\}',$mode,'plugin_diagrams_embed');
+        // FIXME only allow this when enabled in config
+        $this->Lexer->addSpecialPattern('<diagram(?: .*)?>.*?(?:</diagram>)', $mode, 'plugin_diagrams_embed');
     }
 
-    /**
-     * Parse SVG syntax into media data
-     *
-     * @param string $match
-     * @param int $state
-     * @param int $pos
-     * @param Doku_Handler $handler
-     * @return array|bool
-     */
+    /** @inheritDoc */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
-        return Doku_Handler_Parse_Media($match);
+        [$open, $rest] = sexplode('>', $match, 2);
+        $params = substr($open, 9);
+        $svg = substr($rest, 0, -10);
+
+        $data = [
+            'svg' => $svg,
+            'align' => '',
+            'width' => '',
+            'height' => '',
+            'pos' => $pos,
+            'len' => strlen($match),
+        ];
+
+        if (preg_match('/\b(left|right|center)\b/', $params, $matches)) {
+            $data['align'] = $matches[1];
+        }
+        if (preg_match('/\b(\d+)x(\d+)\b/', $params, $matches)) {
+            $data['width'] = (int)$matches[1];
+            $data['height'] = (int)$matches[2];
+        }
+
+        return $data;
     }
 
-    /**
-     * Render the diagram SVG as <object> instead of <img> to allow links,
-     * except when rendering to a PDF
-     *
-     * @param string $format
-     * @param Doku_Renderer $renderer
-     * @param array $data
-     * @return bool
-     */
+    /** @inheritDoc */
     public function render($format, Doku_Renderer $renderer, $data)
     {
         if ($format !== 'xhtml') return false;
 
-        if(is_a($renderer, 'renderer_plugin_dw2pdf')) {
-            $imageAttributes = array(
-                'class'   => 'media',
-                'src'     => ml($data['src']),
-                'width'   => $data['width'],
-                'height'  => $data['height'],
-                'align'   => $data['align'],
-                'title'   => $data['title']
-            );
-            $renderer->doc .= '<img '. buildAttributes($imageAttributes) . '/>';
-        } else {
-            $width = $data['width'] ? 'width="' . $data['width'] . '"' : '';
-            $height = $data['height'] ? 'height="' . $data['height'] . '"' : '';
-            $tag = '<object data="%s&cache=nocache" type="image/svg+xml" class="diagrams-svg media%s" %s %s></object>';
-            $renderer->doc .= sprintf($tag, ml($data['src']), $data['align'], $width, $height);
-        }
+        // FIXME currently insecure!
+        // maybe use https://github.com/darylldoyle/svg-sanitizer
+
+        $style = '';
+        if ($data['width']) $style .= 'width: ' . $data['width'] . 'px; ';
+        if ($data['height']) $style .= 'height: ' . $data['height'] . 'px; ';
+
+        $tag = '<div class="plugin_diagrams_inline media%s" style="%s">%s</divobject>';
+        $renderer->doc .= sprintf($tag, $data['align'], $style, $data['svg']);
 
         return true;
     }
 }
+
