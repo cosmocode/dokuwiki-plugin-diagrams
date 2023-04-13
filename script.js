@@ -1,4 +1,5 @@
 jQuery(function () {
+    /* DOKUWIKI:include script/DiagramsEditor.js */
     /* DOKUWIKI:include script/helpers.js */
     /* DOKUWIKI:include script/service.js */
     /* DOKUWIKI:include script/elements.js */

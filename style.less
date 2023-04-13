@@ -10,6 +10,19 @@ a#plugin__diagrams-new {
   }
 }
 
+// style for the editor itself (on top of everything)
+#plugin__diagrams-editor {
+  border: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+}
+
 // embedded diagrams are sized by the surrounding div
 div.plugin_diagrams_embed {
   &.autoSize {

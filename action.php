@@ -130,6 +130,7 @@ class action_plugin_diagrams extends DokuWiki_Action_Plugin
         $image = explode('&', $image);
         $image = $image[0];
 
+        // FIXME this should use mediaFN()
         $file = init_path(
             $conf['mediadir'] .
             DIRECTORY_SEPARATOR .

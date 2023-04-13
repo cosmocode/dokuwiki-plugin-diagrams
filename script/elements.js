@@ -50,7 +50,10 @@ function editDiagramButton(fullId) {
         fullId +
         '">' + LANG.plugins.diagrams.editButton + '</button>'
     );
-    jQuery( $editButton ).on( 'click', {fullId: fullId}, launchEditor );
+    jQuery( $editButton ).on( 'click', () => {
+        const diagramsEditor = new DiagramsEditor(); // FIXME callback for refreshing the image needed
+        diagramsEditor.editMediaFile(fullId);
+    });
 
     return $editButton;
 }

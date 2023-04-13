@@ -5,9 +5,8 @@
  */
 
 /**
- * Callback for when saving has finished
+ * Callback for when saving has finished suscessfully
  * @callback postSaveCallback
- * @param {bool} ok True if saving was successful
  */
 
 
@@ -17,7 +16,6 @@
  * It manages displaying and communicating with the editor, most importantly in manages loading
  * and saving diagrams.
  *
- * FIXME should messages be sent to diagramsEditor.contentWindow instead of diagramsEditor?
  * FIXME we're not catching any fetch exceptions currently. Should we?
  * FIXME should we somehow ensure that there is only ever one instance of this class?
  * @class
@@ -122,11 +120,9 @@ class DiagramsEditor {
         const response = await fetch(uploadUrl, {
             method: 'POST',
             cache: 'no-cache',
+            body: svg,
         });
 
-        if (!response.ok) {
-            alert(LANG.plugins.diagrams.errorSaving);
-        }
         return response.ok;
     }
 
@@ -146,17 +142,16 @@ class DiagramsEditor {
             '&id=' + encodeURIComponent(pageid) +
             '&pos=' + encodeURIComponent(position) +
             '&len=' + encodeURIComponent(length) +
-            '&svg=' + encodeURIComponent(svg) +
             '&sectok=' + JSINFO['sectok'];
+
+        const body = new FormData();
+        body.set('svg', svg);
 
         const response = await fetch(uploadUrl, {
             method: 'POST',
             cache: 'no-cache',
+            body: body,
         });
-
-        if (!response.ok) {
-            alert(LANG.plugins.diagrams.errorSaving);
-        }
 
         return response.ok;
     }
@@ -166,21 +161,10 @@ class DiagramsEditor {
      */
     #createEditor() {
         this.#diagramsEditor = document.createElement('iframe');
-        this.#diagramsEditor.id = 'diagrams-frame';
-        this.#diagramsEditor.style = {
-            border: 0,
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            height: '100%',
-            zIndex: 9999,
-        }; // FIXME assign these via CSS
+        this.#diagramsEditor.id = 'plugin__diagrams-editor';
         this.#diagramsEditor.src = JSINFO['plugins']['diagrams']['service_url'];
         document.body.appendChild(this.#diagramsEditor);
-        window.addEventListener('message', this.#handleMessage.bind(this)); // FIXME might need to be public
+        window.addEventListener('message', this.#handleMessage.bind(this));
     }
 
     /**
@@ -190,7 +174,7 @@ class DiagramsEditor {
         if (this.#diagramsEditor === null) return;
         this.#diagramsEditor.remove();
         this.#diagramsEditor = null;
-        window.removeDiagramsEditor(this.#handleMessage.bind(this));
+        window.removeEventListener('message', this.#handleMessage.bind(this));
     }
 
     /**
@@ -199,17 +183,17 @@ class DiagramsEditor {
      * @param {Event} event
      */
     async #handleMessage(event) {
-        // FIXME do we need this originalEvent here? or is that jQuery specific?
-        const msg = JSON.parse(event.originalEvent.data);
+        const msg = JSON.parse(event.data);
+        console.log(msg);
 
         switch (msg.event) {
             case 'init':
                 // load the SVG data into the editor
-                this.#diagramsEditor.postMessage(JSON.stringify({action: 'load', xml: this.#svg}), '*');
+                this.#diagramsEditor.contentWindow.postMessage(JSON.stringify({action: 'load', xml: this.#svg}), '*');
                 break;
             case 'save':
                 // Save triggers an export to SVG action
-                this.#diagramsEditor.postMessage(
+                this.#diagramsEditor.contentWindow.postMessage(
                     JSON.stringify({
                         action: 'export',
                         format: 'xmlsvg',
@@ -224,8 +208,7 @@ class DiagramsEditor {
                     return;
                 }
                 const ok = await this.#saveCallback(
-                    // FIXME we used to prepend a doctype, but doctypes are no longer recommended for SVG
-                    // FIXME we may need to add a XML header though?
+                    // msg.data contains the SVG as a Base64 encoded data URI
                     decodeURIComponent(atob(
                         msg.data.split(',')[1])
                         .split('')
@@ -233,9 +216,13 @@ class DiagramsEditor {
                         .join('')
                     )
                 );
-                this.#removeEditor(); // FIXME do we need this or wouldn't we get an exit message?
-                if (this.#postSaveCallback !== null) {
-                    this.#postSaveCallback(ok);
+                if (ok) {
+                    this.#removeEditor();
+                    if (this.#postSaveCallback !== null) {
+                        this.#postSaveCallback();
+                    }
+                } else {
+                    alert(LANG.plugins.diagrams.errorSaving);
                 }
                 break;
             case 'exit':

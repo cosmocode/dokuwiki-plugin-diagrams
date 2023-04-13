@@ -17,7 +17,7 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
     public function register(Doku_Event_Handler $controller)
     {
         // only register if embed mode is enabled
-        if(!$this->getConf('mode') & Diagrams::MODE_EMBED) return;
+        if (!$this->getConf('mode') & Diagrams::MODE_EMBED) return;
 
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleLoad');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleSave');
@@ -33,8 +33,9 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
      * @param mixed $param optional parameter passed when event was registered
      * @return void
      */
-    public function handleLoad(Doku_Event $event, $param) {
-        if($event->data !== 'plugin_diagrams_embed_load') return;
+    public function handleLoad(Doku_Event $event, $param)
+    {
+        if ($event->data !== 'plugin_diagrams_embed_load') return;
         $event->preventDefault();
         $event->stopPropagation();
 
@@ -44,17 +45,17 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         $pos = $INPUT->int('pos');
         $len = $INPUT->int('len');
 
-        if(auth_quickaclcheck($id) < AUTH_READ) { // FIXME should we check for EDIT perms on read as well?
+        if (auth_quickaclcheck($id) < AUTH_READ) { // FIXME should we check for EDIT perms on read as well?
             http_status(403);
             return;
         }
 
-        if(!page_exists($id)) {
+        if (!page_exists($id)) {
             http_status(404);
             return;
         }
 
-        if(checklock($id)) {
+        if (checklock($id)) {
             http_status(423, 'Page Locked');
             return;
         }
@@ -87,18 +88,23 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         $len = $INPUT->int('len');
 
 
-        if(auth_quickaclcheck($id) < AUTH_EDIT) {
+        if (auth_quickaclcheck($id) < AUTH_EDIT) {
             http_status(403);
             return;
         }
 
-        if(!page_exists($id)) {
+        if (!page_exists($id)) {
             http_status(404);
             return;
         }
 
-        if(!checkSecurityToken()) {
+        if (!checkSecurityToken()) {
             http_status(403);
+            return;
+        }
+
+        if (empty($svg) || substr($svg, 0, 4) !== '<svg') {
+            http_status(400);
             return;
         }
 
