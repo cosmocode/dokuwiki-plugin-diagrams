@@ -1,12 +1,48 @@
 /**
+ * Callback for saving a diagram
+ * @callback saveCallback
+ * @param {string} svg The SVG data to save
+ */
+
+/**
+ * Callback for when saving has finished
+ * @callback postSaveCallback
+ * @param {bool} ok True if saving was successful
+ */
+
+
+/**
+ * This class encapsulates all interaction with the diagrams editor
+ *
+ * It manages displaying and communicating with the editor, most importantly in manages loading
+ * and saving diagrams.
+ *
  * FIXME should messages be sent to diagramsEditor.contentWindow instead of diagramsEditor?
+ * FIXME we're not catching any fetch exceptions currently. Should we?
+ * FIXME should we somehow ensure that there is only ever one instance of this class?
+ * @class
  */
 class DiagramsEditor {
     /** @type {HTMLIFrameElement} the editor iframe */
-    diagramsEditor = null;
+    #diagramsEditor = null;
 
-    /** @type {CallableFunction} the method to call for saving the diagram */
-    handleSave = null;
+    /** @type {saveCallback} the method to call for saving the diagram */
+    #saveCallback = null;
+
+    /** @type {postSaveCallback} called when saving has finished*/
+    #postSaveCallback = null;
+
+    /** @type {string} the initial save data to load, set by one of the edit* methods */
+    #svg = '';
+
+    /**
+     * Create a new diagrams editor
+     *
+     * @param {postSaveCallback} postSaveCallback Called when saving has finished
+     */
+    constructor(postSaveCallback = null) {
+        this.#postSaveCallback = postSaveCallback;
+    }
 
     /**
      * Initialize the editor for editing a media file
@@ -14,22 +50,19 @@ class DiagramsEditor {
      * @param {string} mediaid The media ID to edit, if 404 a new file will be created
      */
     async editMediaFile(mediaid) {
-        this.#createEditor();
-
-        this.handleSave = (svg) => this.#saveMediaFile(mediaid, svg);
+        this.#saveCallback = (svg) => this.#saveMediaFile(mediaid, svg);
 
         const response = await fetch(DOKU_BASE + 'lib/exe/fetch.php?media=' + mediaid, {
             method: 'GET',
             cache: 'no-cache',
         });
 
-        let svg = '';
         if (response.ok) {
             // if not 404, load the SVG data
-            svg = await response.text();
+            this.#svg = await response.text();
         }
 
-        this.#loadDocument(svg);
+        this.#createEditor();
     }
 
     /**
@@ -39,58 +72,89 @@ class DiagramsEditor {
      * @param {int} index The index of the diagram on the page (0-based)
      */
     async editEmbed(pageid, index) {
-        this.#createEditor();
+        this.#saveCallback = (svg) => this.#saveEmbed(pageid, index, svg);
 
-        this.handleSave = (svg) => this.#saveEmbed(pageid, index, svg);
+        const url = 'FIXME'; // FIXME we need a renderer endpoint that parses SVG out of a page
 
-        const response = await fetch(DOKU_BASE + 'lib/exe/fetch.php?media=' + mediaid, {
+        const response = await fetch(url, {
             method: 'GET',
             cache: 'no-cache',
         });
 
-        let svg = '';
         if (response.ok) {
             // if not 404, load the SVG data
-            svg = await response.text();
+            this.#svg = await response.text();
         } else {
             // a 404 for an embedded diagram should not happen
             alert(LANG.plugins.diagrams.errorLoading);
-            this.#removeEditor();
             return;
         }
 
-        this.#loadDocument(svg);
+        this.#createEditor();
     }
 
     /**
      * Initialize the editor for editing a diagram in memory
      *
      * @param {string} svg The SVG raw data to edit, empty for new file
-     * @param {CallableFunction} callback The callback to call when the editor is closed
+     * @param {saveCallback} callback The callback to call when the editor is closed
      */
     editMemory(svg, callback) {
+        this.#svg = svg;
+        this.#saveCallback = callback.bind(this);
         this.#createEditor();
-        this.handleSave = callback;
-        this.#loadDocument(svg);
     }
 
-    #saveMediaFile(mediaid, svg) {
-        // FIXME save to media file
+    /**
+     * Saves a diagram as a media file
+     *
+     * @param {string} mediaid The media ID to save
+     * @param {string} svg The SVG raw data to save
+     * @returns {Promise<boolean>}
+     */
+    async #saveMediaFile(mediaid, svg) {
+        const uploadUrl = this.#mediaUploadUrl(mediaid);
 
+        const response = await fetch(uploadUrl, {
+            method: 'POST',
+            cache: 'no-cache',
+        });
 
+        if (!response.ok) {
+            alert(LANG.plugins.diagrams.errorSaving);
+        }
+        return response.ok;
     }
 
-    #saveEmbed(pageid, index, svg) {
-        // FIXME save to page
+    /**
+     *
+     * @param {string} pageid The page ID on which the diagram is embedded
+     * @param {string} index The index of the diagram on the page (0-based)
+     * @param {string} svg The SVG raw data to save
+     * @returns {Promise<boolean>}
+     */
+    async #saveEmbed(pageid, index, svg) {
+        const uploadUrl = 'FIXME'; // FIXME we need an endpoint that saves an embedded diagram
+
+        const response = await fetch(uploadUrl, {
+            method: 'POST',
+            cache: 'no-cache',
+        });
+
+        if (!response.ok) {
+            alert(LANG.plugins.diagrams.errorSaving);
+        }
+
+        return response.ok;
     }
 
     /**
      * Create the editor iframe and attach the message listener
      */
     #createEditor() {
-        this.diagramsEditor = document.createElement('iframe');
-        this.diagramsEditor.id = 'diagrams-frame';
-        this.diagramsEditor.style = {
+        this.#diagramsEditor = document.createElement('iframe');
+        this.#diagramsEditor.id = 'diagrams-frame';
+        this.#diagramsEditor.style = {
             border: 0,
             position: 'fixed',
             top: 0,
@@ -101,8 +165,8 @@ class DiagramsEditor {
             height: '100%',
             zIndex: 9999,
         }; // FIXME assign these via CSS
-        this.diagramsEditor.src = JSINFO['plugins']['diagrams']['service_url'];
-        document.body.appendChild(this.diagramsEditor);
+        this.#diagramsEditor.src = JSINFO['plugins']['diagrams']['service_url'];
+        document.body.appendChild(this.#diagramsEditor);
         window.addEventListener('message', this.#handleMessage.bind(this)); // FIXME might need to be public
     }
 
@@ -110,18 +174,10 @@ class DiagramsEditor {
      * Remove the editor iframe and detach the message listener
      */
     #removeEditor() {
-        this.diagramsEditor.remove();
-        this.diagramsEditor = null;
+        if (this.#diagramsEditor === null) return;
+        this.#diagramsEditor.remove();
+        this.#diagramsEditor = null;
         window.removeDiagramsEditor(this.#handleMessage.bind(this));
-    }
-
-    /**
-     * Load the given SVG document into the editor
-     *
-     * @param {string} svg
-     */
-    #loadDocument(svg) {
-        this.diagramsEditor.postMessage(JSON.stringify({action: 'load', xml: svg}), '*');
     }
 
     /**
@@ -129,17 +185,18 @@ class DiagramsEditor {
      *
      * @param {Event} event
      */
-    #handleMessage(event) {
+    async #handleMessage(event) {
         // FIXME do we need this originalEvent here? or is that jQuery specific?
         const msg = JSON.parse(event.originalEvent.data);
 
         switch (msg.event) {
             case 'init':
-                // FIXME do we need to wait for this? before we can call #loadDocument?
+                // load the SVG data into the editor
+                this.#diagramsEditor.postMessage(JSON.stringify({action: 'load', xml: this.#svg}), '*');
                 break;
             case 'save':
                 // Save triggers an export to SVG action
-                this.diagramsEditor.postMessage(
+                this.#diagramsEditor.postMessage(
                     JSON.stringify({
                         action: 'export',
                         format: 'xmlsvg',
@@ -153,7 +210,7 @@ class DiagramsEditor {
                     alert(LANG.plugins.diagrams.errorUnsupportedFormat);
                     return;
                 }
-                this.handleSave(
+                const ok = await this.#saveCallback(
                     // FIXME we used to prepend a doctype, but doctypes are no longer recommended for SVG
                     // FIXME we may need to add a XML header though?
                     decodeURIComponent(atob(
@@ -163,6 +220,10 @@ class DiagramsEditor {
                         .join('')
                     )
                 );
+                this.#removeEditor(); // FIXME do we need this or wouldn't we get an exit message?
+                if (this.#postSaveCallback !== null) {
+                    this.#postSaveCallback(ok);
+                }
                 break;
             case 'exit':
                 this.#removeEditor();
@@ -170,4 +231,27 @@ class DiagramsEditor {
         }
     }
 
+    /**
+     * Get the URL to upload a media file
+     * @param {string} mediaid
+     * @returns {string}
+     */
+    #mediaUploadUrl(mediaid) {
+        // split mediaid into namespace and id
+        let id = mediaid;
+        let ns = '';
+        const idParts = id.split(':');
+        if (idParts.length > 1) {
+            id = idParts.pop(idParts);
+            ns = idParts.join(':');
+        }
+
+        return DOKU_BASE +
+            'lib/exe/ajax.php?call=mediaupload&ow=true&ns=' +
+            encodeURIComponent(ns) +
+            '&qqfile=' +
+            encodeURIComponent(id) +
+            '&sectok=' +
+            encodeURIComponent(JSINFO['sectok']);
+    }
 }
