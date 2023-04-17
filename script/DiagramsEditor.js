@@ -2,6 +2,7 @@
  * Callback for saving a diagram
  * @callback saveCallback
  * @param {string} svg The SVG data to save
+ * @returns {Promise<boolean>|boolean} true if saving was successful, false otherwise
  */
 
 /**

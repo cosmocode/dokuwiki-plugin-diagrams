@@ -1,9 +1,9 @@
 /**
  * Attach editing button to editable diagrams
  */
-(function (){
+document.addEventListener('DOMContentLoaded', () => {
     // check if the current page is editable by the current user
-    if(!document.querySelector('head link[rel="edit"]')) return;
+    if (!document.querySelector('head link[rel="edit"]')) return;
 
     document.querySelectorAll('.plugin_diagrams_embed').forEach(embed => {
         const button = document.createElement('button');
@@ -23,6 +23,4 @@
 
         embed.appendChild(button);
     });
-})();
-
-
+});

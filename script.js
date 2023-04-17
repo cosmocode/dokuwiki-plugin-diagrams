@@ -1,10 +1,17 @@
+/* DOKUWIKI:include script/DiagramsEditor.js */
+
+// FIXME run only if embed mode enabled:
+/* DOKUWIKI:include script/embed-toolbar.js */
+/* DOKUWIKI:include script/embed-editbutton.js */
+
+
 jQuery(function () {
-    /* DOKUWIKI:include script/DiagramsEditor.js */
+
     /* DOKUWIKI:include script/helpers.js */
     /* DOKUWIKI:include script/service.js */
     /* DOKUWIKI:include script/elements.js */
     /* DOKUWIKI:include script/mediamanager.js */
-    /* DOKUWIKI:include script/embed.js */ //FIXME load only if mode enabled
+
 
     // add diagram edit button to diagram SVGs included in wiki pages
     const $images = jQuery('object').filter('.diagrams-svg');
@@ -46,8 +53,8 @@ jQuery(function () {
 });
 
 // open links in diagrams in the browser window instead of SVG frame
-jQuery(window).on('load', function() {
-    jQuery('object.diagrams-svg').each( function() {
+jQuery(window).on('load', function () {
+    jQuery('object.diagrams-svg').each(function () {
         jQuery(this.contentDocument).find('svg').find('a').attr({'target': '_parent', 'style': 'pointer-events: all;'});
     });
 });
