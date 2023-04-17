@@ -74,7 +74,7 @@ class DiagramsEditor {
         this.#saveCallback = (svg) => this.#saveEmbed(pageid, position, length, svg);
 
         const url = DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_embed_load' +
-            '&id' + encodeURIComponent(pageid) +
+            '&id=' + encodeURIComponent(pageid) +
             '&pos=' + encodeURIComponent(position) +
             '&len=' + encodeURIComponent(length);
 

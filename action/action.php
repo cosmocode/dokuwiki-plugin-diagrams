@@ -5,7 +5,7 @@
  *
  * FIXME move out all mediafile related stuff to a separate class and make it check the mode config
  */
-class action_plugin_diagrams extends DokuWiki_Action_Plugin
+class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
 {
 
     /**

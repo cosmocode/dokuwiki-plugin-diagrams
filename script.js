@@ -4,6 +4,7 @@ jQuery(function () {
     /* DOKUWIKI:include script/service.js */
     /* DOKUWIKI:include script/elements.js */
     /* DOKUWIKI:include script/mediamanager.js */
+    /* DOKUWIKI:include script/embed.js */ //FIXME load only if mode enabled
 
     // add diagram edit button to diagram SVGs included in wiki pages
     const $images = jQuery('object').filter('.diagrams-svg');

@@ -85,14 +85,14 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
      */
     public function handleSave(Doku_Event $event, $param)
     {
-        if ($event->data !== 'plugin_diagrams_embed_load') return;
+        if ($event->data !== 'plugin_diagrams_embed_save') return;
         $event->preventDefault();
         $event->stopPropagation();
 
         global $INPUT;
 
         $id = $INPUT->str('id');
-        $svg = $INPUT->str('svg'); // FIXME do we want to do any sanity checks on this?
+        $svg = $INPUT->str('svg');
         $pos = $INPUT->int('pos');
         $len = $INPUT->int('len');
 

@@ -48,6 +48,10 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
         $params = substr($open, 9);
         $svg = substr($rest, 0, -10);
 
+        // embed positions
+        $svglen = strlen($svg);
+        $svgpos = $pos + strpos($match, '>');
+
         /** @var helper_plugin_diagrams $helper */
         $helper = plugin_load('helper', 'diagrams');
         if(!$helper->isDiagram($svg)) return false;
@@ -67,8 +71,8 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
             'align' => '',
             'width' => '',
             'height' => '',
-            'pos' => $pos,
-            'len' => strlen($match),
+            'pos' => $svgpos,
+            'len' => $svglen,
         ];
 
         if (preg_match('/\b(left|right|center)\b/', $params, $matches)) {
