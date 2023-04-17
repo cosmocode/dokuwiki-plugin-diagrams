@@ -2,13 +2,16 @@
 
 /* DOKUWIKI:include script/elements.js */ // FIXME get rid of
 
-// FIXME run only if embed mode enabled:
-/* DOKUWIKI:include script/embed-toolbar.js */
-/* DOKUWIKI:include script/embed-editbutton.js */
+// noinspection JSBitwiseOperatorUsage
+if(JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 1)) {
+    /* DOKUWIKI:include script/mediafile-editbutton.js */
+    /* DOKUWIKI:include script/mediamanager.js */
+}
 
-// FIXME run only if imagefile mode enabled:
-/* DOKUWIKI:include script/mediafile-editbutton.js */
-/* DOKUWIKI:include script/mediamanager.js */
-
+// noinspection JSBitwiseOperatorUsage
+if(JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 2)) {
+    /* DOKUWIKI:include script/embed-toolbar.js */
+    /* DOKUWIKI:include script/embed-editbutton.js */
+}
 
 

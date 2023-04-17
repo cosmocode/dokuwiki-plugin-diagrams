@@ -1,5 +1,7 @@
 <?php
 
+use dokuwiki\plugin\diagrams\Diagrams;
+
 /**
  * Class syntax_plugin_diagrams
  */
@@ -26,6 +28,9 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin {
      */
     public function connectTo($mode)
     {
+        // only register if mediafile mode is enabled
+        if(!($this->getConf('mode') & Diagrams::MODE_MEDIA)) return;
+
         $this->Lexer->addSpecialPattern('\{\{[^\}]+(?:\.svg)[^\}]*?\}\}',$mode,'plugin_diagrams_mediafile');
     }
 

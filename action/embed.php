@@ -19,7 +19,7 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
     public function register(Doku_Event_Handler $controller)
     {
         // only register if embed mode is enabled
-        if (!$this->getConf('mode') & Diagrams::MODE_EMBED) return;
+        if (!($this->getConf('mode') & Diagrams::MODE_EMBED)) return;
 
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleLoad');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleSave');
@@ -32,12 +32,9 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
      *
      * This locks the page for editing
      *
-     * @see https://www.dokuwiki.org/devel:events:AJAX_CALL_UNKNOWN
-     * @param Doku_Event $event Event object
-     * @param mixed $param optional parameter passed when event was registered
-     * @return void
+     * @param Doku_Event $event Event object AJAX_CALL_UNKNOWN
      */
-    public function handleLoad(Doku_Event $event, $param)
+    public function handleLoad(Doku_Event $event)
     {
         if ($event->data !== 'plugin_diagrams_embed_load') return;
         $event->preventDefault();
@@ -65,7 +62,7 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         }
 
         $svg = rawWiki($id);
-        if(!$this->helper->isDiagram($svg)) {
+        if (!$this->helper->isDiagram($svg)) {
             http_status(400);
             return;
         }
@@ -78,12 +75,9 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
     /**
      * Save a new embedded diagram
      *
-     * @see https://www.dokuwiki.org/devel:events:AJAX_CALL_UNKNOWN
-     * @param Doku_Event $event Event object
-     * @param mixed $param optional parameter passed when event was registered
-     * @return void
+     * @param Doku_Event $event AJAX_CALL_UNKNOWN
      */
-    public function handleSave(Doku_Event $event, $param)
+    public function handleSave(Doku_Event $event)
     {
         if ($event->data !== 'plugin_diagrams_embed_save') return;
         $event->preventDefault();
@@ -117,7 +111,7 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
             return;
         }
 
-        if(!$this->helper->isDiagram($svg)) {
+        if (!$this->helper->isDiagram($svg)) {
             http_status(400);
             return;
         }

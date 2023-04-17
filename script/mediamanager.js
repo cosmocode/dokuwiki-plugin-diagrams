@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // check ACLs before displaying the form
                     let ajaxData = {};
-                    ajaxData['call'] = 'plugin_diagrams_acl';
+                    ajaxData['call'] = 'plugin_diagrams_mediafile_nscheck';
                     ajaxData['ns'] = ns;
                     jQuery.get(
                         DOKU_BASE + 'lib/exe/ajax.php',

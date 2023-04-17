@@ -34,7 +34,7 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
     public function connectTo($mode)
     {
         // only register if embed mode is enabled
-        if(!$this->getConf('mode') & Diagrams::MODE_EMBED) return;
+        if(!($this->getConf('mode') & Diagrams::MODE_EMBED)) return;
 
         // auto load sanitizer
         require_once __DIR__ . '/../vendor/autoload.php';
