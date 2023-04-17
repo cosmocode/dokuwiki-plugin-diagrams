@@ -97,24 +97,7 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
     }
 
 
-    /**
-     * Return an array of diagrams editable by the current user
-     *
-     * @param array $images
-     * @return array
-     */
-    protected function editableDiagrams($images)
-    {
-        $editable = [];
 
-        foreach ($images as $image) {
-            if (auth_quickaclcheck(cleanId($image)) >= AUTH_UPLOAD && $this->isDiagram($image)) {
-                $editable[] = $image;
-            }
-        }
-
-        return $editable;
-    }
 
     /**
      * Return true if the image is recognized as our diagram

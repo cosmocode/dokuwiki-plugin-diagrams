@@ -1,7 +1,8 @@
 /**
  * Media manager
+ * FIXME refactor into vanilla JS
  */
-(function () {
+document.addEventListener('DOMContentLoaded', () => {
     /* are we in media manager context? */
     const $mm_page = jQuery('#mediamanager__page');
     const $mm_popup = jQuery('#media__manager');
@@ -85,4 +86,4 @@
         const observer = new MutationObserver(addEditButton);
         observer.observe(targetNode, config);
     });
-})();
+});

@@ -8,6 +8,17 @@
 class helper_plugin_diagrams extends \dokuwiki\Extension\Plugin
 {
     /**
+     * Check if the given file is a diagrams.net diagram
+     * 
+     * @param string $file
+     * @return bool
+     */
+    public function isDiagramFile($file) {
+        $svg = file_get_contents($file, false, null, 0, 500);
+        return $this->isDiagram($svg);
+    }
+
+    /**
      * Check if the given SVG is a diagrams.net diagram
      *
      * This is done by ensuring that the service host is part of the SVG header
