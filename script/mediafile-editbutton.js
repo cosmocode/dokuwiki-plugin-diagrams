@@ -1,5 +1,5 @@
 /**
- * Attach editing button to media file diagrams
+ * Attach editing button to media file diagrams in pages
  */
 document.addEventListener('DOMContentLoaded', async () => {
 

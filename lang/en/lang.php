@@ -9,6 +9,7 @@ $lang['js']['createLink'] = 'Create a diagram';
 $lang['js']['createIntro'] = 'Create a diagram in current namespace';
 $lang['js']['createForbidden'] = 'You do not have sufficient permissions';
 $lang['js']['editButton'] = 'Edit diagram';
+$lang['js']['toolbarButton'] = 'Edit or create diagram';
 $lang['js']['errorInvalidId'] = 'Name is empty or contains invalid characters!';
 $lang['js']['errorSaving'] = 'Saving failed';
 $lang['js']['errorLoading'] = 'Loading failed';

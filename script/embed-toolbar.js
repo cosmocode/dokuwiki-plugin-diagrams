@@ -68,7 +68,7 @@ if (typeof window.toolbar !== 'undefined') {
 
     toolbar[toolbar.length] = {
         type: "DiagramsPlugin",
-        title: "FIXME Edit Diagram",
+        title: LANG.plugins.diagrams.toolbarButton,
         icon: "../../plugins/diagrams/diagrams.png",
     };
 }

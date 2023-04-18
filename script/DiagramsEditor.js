@@ -185,7 +185,6 @@ class DiagramsEditor {
      */
     async #handleMessage(event) {
         const msg = JSON.parse(event.data);
-        console.log(msg);
 
         switch (msg.event) {
             case 'init':

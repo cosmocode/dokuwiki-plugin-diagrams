@@ -1,11 +1,10 @@
 /* DOKUWIKI:include script/DiagramsEditor.js */
-
-/* DOKUWIKI:include script/elements.js */ // FIXME get rid of
+/* DOKUWIKI:include script/DiagramsMediaManager.js */
 
 // noinspection JSBitwiseOperatorUsage
 if(JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 1)) {
     /* DOKUWIKI:include script/mediafile-editbutton.js */
-    /* DOKUWIKI:include script/mediamanager.js */
+    new DiagramsMediaManager();
 }
 
 // noinspection JSBitwiseOperatorUsage
