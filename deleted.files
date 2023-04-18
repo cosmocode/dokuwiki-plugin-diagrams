@@ -1,5 +1,12 @@
 # This is a list of files that were present in previous releases
 # but were removed later. They should not exist in your installation.
 MenuItem.php
+action.php
 drawing.svg
+script/elements.js
+script/embed.js
+script/helpers.js
+script/mediamanager.js
+script/service.js
 syntax.php
+syntax/inline.php
