@@ -190,3 +190,8 @@ class DiagramsMediaManager {
         editor.editMediaFile(svg);
     }
 }
+
+// initialize
+document.addEventListener('DOMContentLoaded', () => {
+    new DiagramsMediaManager();
+});

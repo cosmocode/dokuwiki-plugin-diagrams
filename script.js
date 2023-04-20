@@ -1,10 +1,9 @@
 /* DOKUWIKI:include script/DiagramsEditor.js */
-/* DOKUWIKI:include script/DiagramsMediaManager.js */
 
 // noinspection JSBitwiseOperatorUsage
 if(JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 1)) {
     /* DOKUWIKI:include script/mediafile-editbutton.js */
-    new DiagramsMediaManager();
+    /* DOKUWIKI:include script/DiagramsMediaManager.js */
 }
 
 // noinspection JSBitwiseOperatorUsage
