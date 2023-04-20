@@ -4,7 +4,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
     // get all diagrams images and their IDs
-    const diagrams = document.querySelectorAll('object.diagrams-svg');
+    const diagrams = document.querySelectorAll('object.diagrams-svg[data-id]');
     const diagramIDs = Array.from(diagrams).map(image => image.getAttribute('data-id'));
 
     // check which of the found diagrams are editable

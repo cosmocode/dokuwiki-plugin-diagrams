@@ -45,7 +45,9 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin {
      */
     public function handle($match, $state, $pos, Doku_Handler $handler)
     {
-        return Doku_Handler_Parse_Media($match);
+        $data = Doku_Handler_Parse_Media($match);
+        $data['url'] = ml($data['src'], ['cache' => 'nocache'], true, '&');
+        return $data;
     }
 
     /**
@@ -71,13 +73,16 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin {
 
         if(is_a($renderer, 'renderer_plugin_dw2pdf')) {
             $imageAttributes['align'] = $data['align'];
-            $imageAttributes['src'] = ml($data['src'], ['cache' => 'nocache'], true, '&');
+            $imageAttributes['src'] = $data['url'];
             $renderer->doc .= '<img '. buildAttributes($imageAttributes) . '/>';
         } else {
             $imageAttributes['class'] .= ' diagrams-svg';
             $imageAttributes['class'] .= ' media' . $data['align'];
-            $imageAttributes['data'] = ml($data['src'], ['cache' => 'nocache'], true, '&');
+            $imageAttributes['data'] = $data['url'];
             $imageAttributes['data-id'] = cleanID($data['src']);
+            $imageAttributes['type'] = 'image/svg+xml';
+            $imageAttributes['data-pos'] = $data['pos'] ?: '';
+            $imageAttributes['data-len'] = $data['len'] ?: '';
 
             $tag = '<object %s></object>';
             $renderer->doc .= sprintf($tag, buildAttributes($imageAttributes, true));

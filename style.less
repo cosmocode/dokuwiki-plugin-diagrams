@@ -30,25 +30,3 @@ button.diagrams-btn {
   height: 100%;
   z-index: 9999;
 }
-
-// embedded diagrams are sized by the surrounding div
-div.plugin_diagrams_embed {
-  &.autoSize {
-    width: fit-content;
-    height: fit-content;
-
-    svg {
-      height: auto;
-      width: auto;
-    }
-  }
-
-  &.fixedSize {
-    // size set per inline style
-
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-  }
-}

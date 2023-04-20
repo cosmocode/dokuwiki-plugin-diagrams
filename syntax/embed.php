@@ -1,8 +1,6 @@
 <?php
 
-use dokuwiki\Logger;
 use dokuwiki\plugin\diagrams\Diagrams;
-use enshrined\svgSanitize\Sanitizer;
 
 /**
  * DokuWiki Plugin diagrams (Syntax Component)
@@ -10,34 +8,16 @@ use enshrined\svgSanitize\Sanitizer;
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Innovakom + CosmoCode <dokuwiki@cosmocode.de>
  */
-class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
+class syntax_plugin_diagrams_embed extends syntax_plugin_diagrams_mediafile
 {
-    /** @inheritDoc */
-    public function getType()
-    {
-        return 'substition';
-    }
-
-    /** @inheritDoc */
-    public function getPType()
-    {
-        return 'block';
-    }
-
-    /** @inheritDoc */
-    public function getSort()
-    {
-        return 319;
-    }
+    /** @var int count the current embedded diagram */
+    protected $count = 0;
 
     /** @inheritDoc */
     public function connectTo($mode)
     {
         // only register if embed mode is enabled
-        if(!($this->getConf('mode') & Diagrams::MODE_EMBED)) return;
-
-        // auto load sanitizer
-        require_once __DIR__ . '/../vendor/autoload.php';
+        if (!($this->getConf('mode') & Diagrams::MODE_EMBED)) return;
         $this->Lexer->addSpecialPattern('<diagram(?: .*?)?>.*?(?:</diagram>)', $mode, 'plugin_diagrams_embed');
     }
 
@@ -54,17 +34,7 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
 
         /** @var helper_plugin_diagrams $helper */
         $helper = plugin_load('helper', 'diagrams');
-        if(!$helper->isDiagram($svg)) return false;
-
-        // sanitize svg
-        $sanitizer = new Sanitizer();
-        $svg = $sanitizer->sanitize($svg);
-
-        if(!$svg) {
-            global $ID;
-            Logger::debug('diagrams: invalid SVG on '.$ID, $sanitizer->getXmlIssues());
-            return false;
-        }
+        if (!$helper->isDiagram($svg)) return false;
 
         $data = [
             'svg' => $svg,
@@ -89,29 +59,27 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
     /** @inheritDoc */
     public function render($format, Doku_Renderer $renderer, $data)
     {
-        if ($format !== 'xhtml') return false;
-        if(!$data) return false;
+        if (!$data) return false;
+        global $ID;
+        global $INPUT;
 
-        $style = '';
-        if($data['width'] && $data['height']) {
-            $style .= 'width: ' . $data['width'] . 'px; ';
-            $style .= 'height: ' . $data['height'] . 'px; ';
-            $class = 'fixedSize';
-        } else {
-            $class = 'autoSize';
+        switch ($format) {
+            case 'xhtml':
+                // this references the diagram via the export_diagrams URL
+                // this is used instead of inlining the SVG to be able to use a CSP header to prevent XSS
+                $data['url'] = wl($ID, ['do' => 'export_diagrams', 'svg' => $this->count++], true, '&');
+                parent::render($format, $renderer, $data);
+                return true;
+            case 'diagrams':
+                // This exports a single SVG during the export_diagrams action
+                if ($INPUT->int('svg') === $this->count++) {
+                    $renderer->doc = $data['svg'];
+                }
+                return true;
         }
-
-        $attr = [
-            'class' => "plugin_diagrams_embed $class media" . $data['align'],
-            'style' => $style,
-            'data-pos' => $data['pos'],
-            'data-len' => $data['len'],
-        ];
-
-        $tag = '<div %s>%s</div>';
-        $renderer->doc .= sprintf($tag, buildAttributes($attr), $data['svg']);
-
-        return true;
+        return false;
     }
+
+
 }
 
