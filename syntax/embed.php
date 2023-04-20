@@ -38,7 +38,7 @@ class syntax_plugin_diagrams_embed extends \dokuwiki\Extension\SyntaxPlugin
 
         // auto load sanitizer
         require_once __DIR__ . '/../vendor/autoload.php';
-        $this->Lexer->addSpecialPattern('<diagram(?: .*)?>.*?(?:</diagram>)', $mode, 'plugin_diagrams_embed');
+        $this->Lexer->addSpecialPattern('<diagram(?: .*?)?>.*?(?:</diagram>)', $mode, 'plugin_diagrams_embed');
     }
 
     /** @inheritDoc */
