@@ -11,6 +11,7 @@ class DiagramsMediaManager {
         if (tree) {
             const createLink = document.createElement('a');
             createLink.addEventListener('click', this.#showCreationDialog.bind(this));
+            createLink.className = 'plugin_diagrams_create';
             createLink.innerText = LANG.plugins.diagrams.createLink;
             createLink.href = '#';
             tree.prepend(createLink);

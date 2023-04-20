@@ -1,13 +1,21 @@
-a#plugin__diagrams-new {
+// link in media manager
+a.plugin_diagrams_create {
   display: flex;
-  margin-bottom: 1rem;
+  margin-bottom: 1em;
+  gap: 0.25em;
 
   &:before {
     content: '';
-    width: 1.5rem;
-    background-image: url("/lib/plugins/diagrams/img/diagramsnet.svg");
+    width: 1.2em;
+    height: 1.2em;
+    background-image: url("img/diagramsnet.svg");
     background-repeat: no-repeat;
   }
+}
+
+// in-page edit button
+button.diagrams-btn {
+  display: block;
 }
 
 // style for the editor itself (on top of everything)

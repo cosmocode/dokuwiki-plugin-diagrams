@@ -69,6 +69,6 @@ if (typeof window.toolbar !== 'undefined') {
     toolbar[toolbar.length] = {
         type: "DiagramsPlugin",
         title: LANG.plugins.diagrams.toolbarButton,
-        icon: "../../plugins/diagrams/diagrams.png",
+        icon: "../../plugins/diagrams/img/diagramsnet.png",
     };
 }

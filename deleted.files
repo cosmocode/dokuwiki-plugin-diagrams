@@ -2,6 +2,7 @@
 # but were removed later. They should not exist in your installation.
 MenuItem.php
 action.php
+diagrams.png
 drawing.svg
 script/elements.js
 script/embed.js
