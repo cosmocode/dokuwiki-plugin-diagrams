@@ -1,4 +1,5 @@
 /* DOKUWIKI:include script/DiagramsEditor.js */
+/* DOKUWIKI:include script/prosemirror.js */
 
 // noinspection JSBitwiseOperatorUsage
 if(JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 1)) {
