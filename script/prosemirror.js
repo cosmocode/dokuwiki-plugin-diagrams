@@ -1,7 +1,4 @@
-(async() => {
-    while(!window.hasOwnProperty('Prosemirror'))
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
+jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
     window.Prosemirror.pluginSchemas.push((nodes, marks) => {
         nodes = nodes.addToEnd('diagrams', {
             inline: true,
@@ -39,10 +36,9 @@
                         width: width,
                         height: height,
                     }
-                    ]
+                ]
             }
         });
         return {nodes, marks};
     });
-
-})();
+});
