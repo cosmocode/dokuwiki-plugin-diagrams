@@ -53,7 +53,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
         $helper = plugin_load('helper', 'diagrams');
         if (!$data['type'] == 'internalmedia' || !$helper->isDiagramFile(mediaFN($data['src']))) {
             // This is not a local diagrams file, but some other SVG media file
-            return $handler->media($match, $state, $pos);
+            $handler->media($match, $state, $pos);
+            return false;
         }
 
         $data['url'] = ml($data['src'], ['cache' => 'nocache'], true, '&');
