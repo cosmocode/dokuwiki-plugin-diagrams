@@ -45,7 +45,7 @@ class action_plugin_diagrams_prosemirror extends \dokuwiki\Extension\ActionPlugi
 
         $node = new Node('diagrams');
         $node->attr('id', $imageData['src']);
-        $node->attr('src', $imageData['url']);
+        $node->attr('data', $imageData['url']);
         $node->attr('title', $imageData['title']);
         $node->attr('width', $imageData['width']);
         $node->attr('height', $imageData['height']);

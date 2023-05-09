@@ -15,3 +15,4 @@ $lang['js']['errorSaving'] = 'Saving failed';
 $lang['js']['errorLoading'] = 'Loading failed';
 $lang['js']['errorUnsupportedFormat'] = 'Unsupported file format!';
 $lang['js']['saving'] = 'Saving';
+$lang['js']['PMMenuItem'] = 'Diagram';
