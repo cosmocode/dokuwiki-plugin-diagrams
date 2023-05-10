@@ -3,21 +3,35 @@ class DiagramsForm extends KeyValueForm {
     if (fields.length === 0) {
       fields = [
         {
-          label: 'media source', name: 'src'
+          label: LANG.plugins.diagrams.mediaSource, name: 'src'
         },
         {
-          type: 'select', 'label': 'alignment', 'options':
+          type: 'select', 'label': LANG.plugins.diagrams.alignment, 'options':
             [
-              {name: 'alignment', value: 'left', label: 'links'},
-              {name: 'alignment', value: 'right', label: 'rechts'},
-              {name: 'alignment', value: 'center', label: 'zentriert'}
+              {name: 'alignment', value: 'left', label: LANG.plugins.diagrams.left},
+              {name: 'alignment', value: 'right', label: LANG.plugins.diagrams.right},
+              {name: 'alignment', value: 'center', label: LANG.plugins.diagrams.center}
             ]
         }
       ];
     }
 
     super(name, fields);
+
+    if (!this.instance) {
+      // media manager
+      const selectButton = jQuery('<button>', {
+        type: 'button',
+      });
+      selectButton.text(LANG.plugins.diagrams.selectSource);
+      selectButton.on('click', DiagramsForm.openMediaManager);
+      this.$form.find('fieldset').prepend(selectButton);
+      window.dMediaSelect = this.mediaSelect.bind(this);
+    }
+
+    return this.instance;
   }
+
   setSource(id = '') {
     this.$form.find('[name="src"]').val(id);
   }
@@ -91,5 +105,17 @@ class DiagramsForm extends KeyValueForm {
       errorMsg += ' You may want to continue your work in the syntax editor.';
       jQuery('#draft__status').after(jQuery('<div class="error"></div>').text(errorMsg));
     });
+  }
+
+  static openMediaManager() {
+    window.open(
+      `${DOKU_BASE}lib/exe/mediamanager.php?ns=${encodeURIComponent(JSINFO.namespace)}&onselect=dMediaSelect`,
+      'mediaselect',
+      'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes',
+    );
+  }
+
+  mediaSelect(edid, mediaid, opts, align) {
+    this.setSource(mediaid);
   }
 }

@@ -12,10 +12,8 @@ class DiagramsView extends AbstractNodeView {
     const ele = Object.assign(document.createElement(dgrSchemaSpecs[0]), fullAttrs);
     ele.setAttribute('class', fullAttrs.class);
     ele.setAttribute('data-id', fullAttrs['data-id']);
-    ele.setAttribute('pointer-events', 'none');
 
     container.appendChild(ele);
-
     this.dom = container;
 
     DiagramsForm.resolveImageAttributes(attrs, (newAttrs) => {
