@@ -1,5 +1,7 @@
 <?php
 
+use dokuwiki\plugin\diagrams\parser\DiagramsNode;
+use dokuwiki\plugin\prosemirror\parser\ImageNode;
 use dokuwiki\plugin\prosemirror\schema\Node;
 
 /**
@@ -39,14 +41,27 @@ class action_plugin_diagrams_prosemirror extends \dokuwiki\Extension\ActionPlugi
         $imageData = $eventData['data'];
 
         //check for our data
-        if ($eventData['name'] !== 'diagrams_mediafile') return;
+        if (
+            $eventData['name'] !== 'diagrams_mediafile' &&
+            $eventData['name'] !== 'diagrams_embed'
+        ) return;
 
         $event->preventDefault();
 
+        if($eventData['name'] === 'diagrams_mediafile') {
+            $url = $imageData['url'];
+        } else {
+            // we use a data uri that will be loaded in an img tag
+            // this should provide the same amount of security as our CSP but can be interactively
+            // changed during the edit session
+            $url = 'data:image/svg+xml;base64,' . base64_encode($imageData['svg']);
+        }
+
         $node = new Node('diagrams');
-        $node->attr('id', $imageData['src']);
-        $node->attr('data', $imageData['url']);
-        $node->attr('title', $imageData['title']);
+        $node->attr('type', $eventData['name'] === 'diagrams_mediafile' ? 'mediafile' : 'embed');
+        $node->attr('id', $imageData['src'] ?? ''); // only for mediafile
+        $node->attr('data', $url); // FIXME rename to url here, in schema and everywhere
+        $node->attr('title', $imageData['title'] ?? '');
         $node->attr('width', $imageData['width']);
         $node->attr('height', $imageData['height']);
         $node->attr('align', $imageData['align']);
@@ -76,7 +91,15 @@ class action_plugin_diagrams_prosemirror extends \dokuwiki\Extension\ActionPlugi
 
         $event->preventDefault();
 
-        $node = new \dokuwiki\plugin\diagrams\parser\DiagramsNode($event->data['node'], $event->data['parent']);
+        // FIXME for embedded mode we need a more custom node
+
+        if($event->data['node']['attrs']['type'] === 'mediafile') {
+            $node = new ImageNode($event->data['node'], $event->data['parent']);
+        } else {
+            $node = new DiagramsNode($event->data['node'], $event->data['parent']);
+        }
+
+
         $event->data['newNode'] = $node;
     }
 }

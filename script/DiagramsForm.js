@@ -35,20 +35,48 @@ class DiagramsForm extends KeyValueForm {
             this.$form.find('fieldset').prepend(editButton);
 
             editButton.addEventListener('click', event => {
-                event.preventDefault();
-                const diagramsEditor = new DiagramsEditor(async () => {
-                    // relaod the image src for all images using it
-                    // see https://stackoverflow.com/a/66312176
-                    const url = editButton.getAttribute('data-url');
-                    await fetch(url, {cache: 'reload', mode: 'no-cors'});
-                    document.body.querySelectorAll(`img[src='${url}']`)
-                        .forEach(img => img.src = url)
-                });
-                diagramsEditor.editMediaFile(editButton.getAttribute('data-id'));
+                event.preventDefault(); // prevent form submission
+
+                const url = editButton.getAttribute('data-url');
+                const mediaid = editButton.getAttribute('data-id');
+
+                if(mediaid) {
+                    console.log('edit media');
+                    const diagramsEditor = new DiagramsEditor(this.onSavedMediaFile.bind(this, url));
+                    diagramsEditor.editMediaFile();
+                } else {
+                    console.log('edit embed');
+                    const diagramsEditor = new DiagramsEditor();
+                    diagramsEditor.editMemory(url, this.onSaveEmbed);
+                }
+
             });
         }
 
         return this.instance;
+    }
+
+    /**
+     * After svaing a media file reload the src for all images using it
+     *
+     * @see https://stackoverflow.com/a/66312176
+     * @param {string} url
+     * @returns {Promise<void>}
+     */
+    async onSavedMediaFile(url) {
+        await fetch(url, {cache: 'reload', mode: 'no-cors'});
+        document.body.querySelectorAll(`img[src='${url}']`)
+            .forEach(img => img.src = url)
+    }
+
+    /**
+     * Save an embedded diagram back to the editor
+     */
+    onSaveEmbed(svg) {
+        // FIXME how do we update the diagram?
+        const url = 'data:image/svg+xml;base64,' + btoa(svg);
+
+        return true;
     }
 
     setEditButtonUrl(id, url) {
