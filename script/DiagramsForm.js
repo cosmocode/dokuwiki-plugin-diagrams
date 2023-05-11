@@ -80,48 +80,8 @@ class DiagramsForm extends KeyValueForm {
       newAttrs.data = `${DOKU_BASE}lib/exe/fetch.php?cache=nocache&media=` + $diagramsForm.getSource();
       newAttrs.align = $diagramsForm.getAlignment();
 
-      this.resolveImageAttributes(newAttrs, callback);
+      callback(newAttrs);
     };
-  }
-
-  static resolveImageAttributes(newAttrs, callback) {
-    const ajaxEndpoint = `${DOKU_BASE}lib/exe/ajax.php`;
-    const ajaxParams = {
-      call: 'plugin_prosemirror',
-      actions: ['resolveMedia'],
-      attrs: newAttrs,
-      id: JSINFO.id,
-    };
-
-    jQuery.get(
-      ajaxEndpoint,
-      ajaxParams,
-    ).done((data) => {
-      const resolvedAttrs = {
-        ...newAttrs,
-        'data-resolvedHtml': data.resolveMedia['data-resolvedHtml'],
-      };
-      callback(resolvedAttrs);
-    }).fail((jqXHR, textStatus, errorThrown) => {
-      let errorMsg = `There was an error resolving this image -- ${errorThrown}: ${textStatus}.`;
-      if (window.SentryPlugin) {
-        window.SentryPlugin.logSentryException(new Error('Ajax Request failed'), {
-          tags: {
-            plugin: 'prosemirror',
-            id: JSINFO.id,
-          },
-          extra: {
-            ajaxEndpoint,
-            ajaxParams,
-            textStatus,
-            errorThrown,
-          },
-        });
-        errorMsg += ' The error has been logged to Sentry.';
-      }
-      errorMsg += ' You may want to continue your work in the syntax editor.';
-      jQuery('#draft__status').after(jQuery('<div class="error"></div>').text(errorMsg));
-    });
   }
 
   static openMediaManager() {
