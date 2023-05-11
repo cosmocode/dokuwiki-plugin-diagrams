@@ -5,8 +5,9 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
             inline: true,
             selectable: true,
             attrs: {
-                data: {},
+                url: {},
                 id: {},
+                type: {default: 'mediafile'},
                 title: {default: null},
                 width: {default: null},
                 height: {default: null},
@@ -15,14 +16,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
             group: "inline",
             draggable: false,
             toDOM: function toDOM(node) {
-                const ref = node.attrs;
-                const data = ref.data;
-                const id = ref.id;
-                const width = ref.width;
-                const height = ref.height;
-                const title = ref.title;
-                let alignclass = ref.align;
-
+                let alignclass = node.attrs.align;
                 if (alignclass.length !== 0) {
                     alignclass = ` media${alignclass}`;
                 }
@@ -30,11 +24,11 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
                 return [
                     'img',
                     {
-                        type: 'image/svg+xml',
-                        className: 'media diagrams-svg' + alignclass,
-                        title: title,
-                        src: data,
-                        'data-id': id,
+                        class: 'media diagrams-svg' + alignclass,
+                        title: node.attrs.title,
+                        src: node.attrs.url,
+                        'data-id': node.attrs.id,
+                        'data-type': node.attrs.type,
                         //width: width,
                         //height: height,
                     }

@@ -60,7 +60,7 @@ class action_plugin_diagrams_prosemirror extends \dokuwiki\Extension\ActionPlugi
         $node = new Node('diagrams');
         $node->attr('type', $eventData['name'] === 'diagrams_mediafile' ? 'mediafile' : 'embed');
         $node->attr('id', $imageData['src'] ?? ''); // only for mediafile
-        $node->attr('data', $url); // FIXME rename to url here, in schema and everywhere
+        $node->attr('url', $url);
         $node->attr('title', $imageData['title'] ?? '');
         $node->attr('width', $imageData['width']);
         $node->attr('height', $imageData['height']);

@@ -1,4 +1,8 @@
 class DiagramsForm extends KeyValueForm {
+
+    /** {DiagramsView} The view of the currently selected node */
+    #view = null;
+
     constructor(name = 'diagrams-form', fields = []) {
         if (fields.length === 0) {
             fields = [
@@ -8,6 +12,7 @@ class DiagramsForm extends KeyValueForm {
                 {
                     type: 'select', 'label': LANG.plugins.diagrams.alignment, 'options':
                         [
+                            {name: 'alignment', value: '', label: ''},
                             {name: 'alignment', value: 'left', label: LANG.plugins.diagrams.left},
                             {name: 'alignment', value: 'right', label: LANG.plugins.diagrams.right},
                             {name: 'alignment', value: 'center', label: LANG.plugins.diagrams.center}
@@ -17,6 +22,12 @@ class DiagramsForm extends KeyValueForm {
         }
 
         super(name, fields);
+
+        this.$form.on('submit', (event) => {
+            event.preventDefault(); // prevent form submission
+            this.updateViewFromForm();
+            this.#view.deselectNode();
+        });
 
         if (!this.instance) {
             // media manager button
@@ -37,17 +48,15 @@ class DiagramsForm extends KeyValueForm {
             editButton.addEventListener('click', event => {
                 event.preventDefault(); // prevent form submission
 
-                const url = editButton.getAttribute('data-url');
-                const mediaid = editButton.getAttribute('data-id');
+                const url = this.#view.node.attrs.url;
+                const mediaid = this.#view.node.attrs.id;
 
-                if(mediaid) {
-                    console.log('edit media');
+                if(this.#view.node.attrs.type === 'mediafile') {
                     const diagramsEditor = new DiagramsEditor(this.onSavedMediaFile.bind(this, url));
-                    diagramsEditor.editMediaFile();
+                    diagramsEditor.editMediaFile(mediaid);
                 } else {
-                    console.log('edit embed');
                     const diagramsEditor = new DiagramsEditor();
-                    diagramsEditor.editMemory(url, this.onSaveEmbed);
+                    diagramsEditor.editMemory(url, this.onSaveEmbed.bind(this));
                 }
 
             });
@@ -55,6 +64,49 @@ class DiagramsForm extends KeyValueForm {
 
         return this.instance;
     }
+
+    /**
+     * Update the form to reflect the new selected nodeView
+     *
+     * @param {DiagramsView} view
+     */
+    updateFormFromView(view) {
+        this.#view = view;
+
+        // update form fields to reflect new node
+
+        this.$form.find('[name="src"]').val(view.node.attrs.id);
+
+        // this.dForm.setWidth(view.node.attrs.width);
+        // this.dForm.setHeight(view.node.attrs.height);
+
+
+        const align = view.node.attrs.align;
+        this.$form.find('[name="alignment"]').prop('selected', '');
+        this.$form.find(`[name="alignment"][value="${align}"]`).prop('selected', 'selected');
+    }
+
+    updateViewFromForm() {
+        const newAttrs = this.getAttributes();
+        console.log('updateViewFromForm', newAttrs);
+        this.#view.dispatchNodeUpdate(newAttrs);
+    }
+
+    getAttributes() {
+        const attrs = {};
+        attrs.id = this.$form.find('[name="src"]').val();
+        attrs.align = this.$form.find('[name="alignment"]:selected').val();
+        attrs.type = this.#view.node.attrs.type;
+
+        // fixme this is only correct for media files
+        if(this.#view.node.attrs.type === 'embed') {
+            attrs.url = this.#view.node.attrs.url; // keep the data uri
+        } else {
+            attrs.url = `${DOKU_BASE}lib/exe/fetch.php?cache=nocache&media=` + attrs.id;
+        }
+        return attrs;
+    }
+
 
     /**
      * After svaing a media file reload the src for all images using it
@@ -76,6 +128,9 @@ class DiagramsForm extends KeyValueForm {
         // FIXME how do we update the diagram?
         const url = 'data:image/svg+xml;base64,' + btoa(svg);
 
+        this.#view.node.attrs.url = url;
+        this.updateViewFromForm();
+
         return true;
     }
 
@@ -95,8 +150,6 @@ class DiagramsForm extends KeyValueForm {
     }
 
     setAlignment(align = '') {
-        this.$form.find('[name="alignment"]').prop('selected', '');
-        this.$form.find(`[name="alignment"][value="${align}"]`).prop('selected', 'selected');
     }
 
     getAlignment() {
@@ -114,7 +167,7 @@ class DiagramsForm extends KeyValueForm {
             const newAttrs = { ...initialAttrs };
             newAttrs.id = $diagramsForm.getSource();
             // FIXME is this conditional?
-            newAttrs.data = `${DOKU_BASE}lib/exe/fetch.php?cache=nocache&media=` + $diagramsForm.getSource();
+            newAttrs.url = `${DOKU_BASE}lib/exe/fetch.php?cache=nocache&media=` + $diagramsForm.getSource();
             newAttrs.align = $diagramsForm.getAlignment();
 
             callback(newAttrs);

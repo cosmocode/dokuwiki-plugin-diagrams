@@ -31,7 +31,7 @@ class DiagramsNode extends Node
         }
         $openingTag .= '>';
 
-        $svg = $this->data['attrs']['data'];
+        $svg = $this->data['attrs']['url'];
         if (substr($svg, 0, 26) !== 'data:image/svg+xml;base64,') {
             throw new \Exception('bad data uri "'.substr($svg, 0, 26).'"');
         }
