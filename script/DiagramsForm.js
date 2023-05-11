@@ -19,17 +19,34 @@ class DiagramsForm extends KeyValueForm {
     super(name, fields);
 
     if (!this.instance) {
-      // media manager
-      const selectButton = jQuery('<button>', {
-        type: 'button',
-      });
-      selectButton.text(LANG.plugins.diagrams.selectSource);
-      selectButton.on('click', DiagramsForm.openMediaManager);
+      // media manager button
+      const selectButton = document.createElement('button');
+      selectButton.innerText = LANG.plugins.diagrams.selectSource;
+      selectButton.className = 'diagrams-btn-select';
+      selectButton.addEventListener('click', DiagramsForm.openMediaManager);
       this.$form.find('fieldset').prepend(selectButton);
       window.dMediaSelect = this.mediaSelect.bind(this);
+
+      // editor button
+      const editButton = document.createElement('button');
+      editButton.className = 'diagrams-btn-edit';
+      editButton.id = 'diagrams__btn-edit';
+      editButton.innerText = LANG.plugins.diagrams.editButton;
+      this.$form.find('fieldset').prepend(editButton);
     }
 
     return this.instance;
+  }
+
+  setEditId(id) {
+    const $editButton = jQuery(this.$form.find('#diagrams__btn-edit'));
+    $editButton.on('click', event => {
+      event.preventDefault();
+      const diagramsEditor = new DiagramsEditor(() => {
+        window.location.reload();
+      });
+      diagramsEditor.editMediaFile(id);
+    });
   }
 
   setSource(id = '') {
