@@ -13,7 +13,7 @@ class DiagramsView extends AbstractNodeView {
     this.dom.classList.add('ProseMirror-selectednode');
 
     this.dForm.setSource(this.node.attrs.id);
-    this.dForm.setEditId(this.node.attrs.id);
+    this.dForm.setEditButtonUrl(this.node.attrs.id, this.node.attrs.data);
     // TODO
     // this.dForm.setWidth(this.node.attrs.width);
     // this.dForm.setHeight(this.node.attrs.height);

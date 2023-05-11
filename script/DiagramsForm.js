@@ -33,20 +33,29 @@ class DiagramsForm extends KeyValueForm {
       editButton.id = 'diagrams__btn-edit';
       editButton.innerText = LANG.plugins.diagrams.editButton;
       this.$form.find('fieldset').prepend(editButton);
+
+      editButton.addEventListener('click', event => {
+          event.preventDefault();
+          const diagramsEditor = new DiagramsEditor(async () => {
+              // relaod the image src for all images using it
+              // see https://stackoverflow.com/a/66312176
+              const url = editButton.getAttribute('data-url');
+              await fetch(url, {cache: 'reload', mode: 'no-cors'});
+              document.body.querySelectorAll(`img[src='${url}']`)
+                  .forEach(img => img.src = url)
+          });
+          diagramsEditor.editMediaFile(editButton.getAttribute('data-id'));
+      });
     }
 
     return this.instance;
   }
 
-  setEditId(id) {
+  setEditButtonUrl(id, url) {
     const $editButton = jQuery(this.$form.find('#diagrams__btn-edit'));
-    $editButton.on('click', event => {
-      event.preventDefault();
-      const diagramsEditor = new DiagramsEditor(() => {
-        window.location.reload();
-      });
-      diagramsEditor.editMediaFile(id);
-    });
+    // FIXME show/hide button depending on set url
+    $editButton.attr('data-id', id);
+    $editButton.attr('data-url', url);
   }
 
   setSource(id = '') {
