@@ -3,7 +3,6 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
     window.Prosemirror.pluginSchemas.push((nodes, marks) => {
         nodes = nodes.addToEnd('diagrams', {
             inline: true,
-            contenteditable: true,
             selectable: true,
             attrs: {
                 data: {},
@@ -24,20 +23,20 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
                 const title = ref.title;
                 let alignclass = ref.align;
 
-                if (alignclass.length != 0) {
+                if (alignclass.length !== 0) {
                     alignclass = ` media${alignclass}`;
                 }
 
                 return [
-                    'object',
+                    'img',
                     {
                         type: 'image/svg+xml',
-                        class: 'media diagrams-svg' + alignclass,
+                        className: 'media diagrams-svg' + alignclass,
                         title: title,
-                        data: data,
+                        src: data,
                         'data-id': id,
-                        width: width,
-                        height: height,
+                        //width: width,
+                        //height: height,
                     }
                 ]
             }
@@ -49,7 +48,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
     const AbstractMenuItemDispatcher = window.Prosemirror.classes.AbstractMenuItemDispatcher;
     const MenuItem = window.Prosemirror.classes.MenuItem;
     const KeyValueForm = window.Prosemirror.classes.KeyValueForm;
-    const AbstractNodeView = window.AbstractNodeView;
+    const AbstractNodeView = window.AbstractNodeView; // FIXME this should be moved to the prosemirror.classes namespace
 
     /* DOKUWIKI:include script/DiagramsForm.js */
     /* DOKUWIKI:include script/DiagramsView.js */

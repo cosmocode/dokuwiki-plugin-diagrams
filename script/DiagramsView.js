@@ -6,25 +6,7 @@ class DiagramsView extends AbstractNodeView {
 
   renderNode(attrs) {
     const dgrSchemaSpecs = this.node.type.spec.toDOM(this.node);
-    const fullAttrs = dgrSchemaSpecs[1];
-    const container = document.createElement('div');
-    container.setAttribute('class', 'diagrams-svg-wrapper');
-    const ele = Object.assign(document.createElement(dgrSchemaSpecs[0]), fullAttrs);
-    ele.setAttribute('class', fullAttrs.class);
-    ele.setAttribute('data-id', fullAttrs['data-id']);
-
-    container.appendChild(ele);
-    this.dom = container;
-
-    DiagramsForm.resolveImageAttributes(attrs, (newAttrs) => {
-      const nodeStartPos = this.getPos();
-      this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
-        nodeStartPos,
-        null,
-        newAttrs,
-        this.node.marks,
-      ));
-    });
+    this.dom = Object.assign(document.createElement(dgrSchemaSpecs[0]), dgrSchemaSpecs[1]);
   }
 
   selectNode() {
