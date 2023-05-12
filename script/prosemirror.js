@@ -29,8 +29,8 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
                         src: node.attrs.url,
                         'data-id': node.attrs.id,
                         'data-type': node.attrs.type,
-                        //width: width,
-                        //height: height,
+                        width: node.attrs.width,
+                        height: node.attrs.height,
                     }
                 ]
             }

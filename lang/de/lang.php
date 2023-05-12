@@ -18,3 +18,4 @@ $lang['js']['alignment'] = 'Ausrichtung';
 $lang['js']['left'] = 'links';
 $lang['js']['center'] = 'zentriert';
 $lang['js']['right'] = 'rechts';
+$lang['js']['title'] = 'Titel';

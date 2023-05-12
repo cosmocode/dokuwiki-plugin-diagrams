@@ -22,3 +22,4 @@ $lang['js']['alignment'] = 'Alignment';
 $lang['js']['left'] = 'left';
 $lang['js']['center'] = 'center';
 $lang['js']['right'] = 'right';
+$lang['js']['title'] = 'Title';

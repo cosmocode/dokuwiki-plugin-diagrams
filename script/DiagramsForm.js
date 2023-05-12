@@ -17,6 +17,9 @@ class DiagramsForm extends KeyValueForm {
                             {name: 'alignment', value: 'right', label: LANG.plugins.diagrams.right},
                             {name: 'alignment', value: 'center', label: LANG.plugins.diagrams.center}
                         ]
+                },
+                {
+                    label: LANG.plugins.diagrams.title, name: 'title'
                 }
             ];
         }
@@ -73,13 +76,8 @@ class DiagramsForm extends KeyValueForm {
     updateFormFromView(view) {
         this.#view = view;
 
-        // update form fields to reflect new node
-
         this.$form.find('[name="src"]').val(view.node.attrs.id);
-
-        // this.dForm.setWidth(view.node.attrs.width);
-        // this.dForm.setHeight(view.node.attrs.height);
-
+        this.$form.find('[name="title"]').val(view.node.attrs.title);
 
         const align = view.node.attrs.align;
         this.$form.find('[name="alignment"]').prop('selected', '');
@@ -88,7 +86,6 @@ class DiagramsForm extends KeyValueForm {
 
     updateViewFromForm() {
         const newAttrs = this.getAttributes();
-        console.log('updateViewFromForm', newAttrs);
         this.#view.dispatchNodeUpdate(newAttrs);
     }
 
@@ -96,10 +93,11 @@ class DiagramsForm extends KeyValueForm {
         const attrs = {};
         attrs.id = this.$form.find('[name="src"]').val();
         attrs.align = this.$form.find('[name="alignment"]:selected').val();
-        attrs.type = this.#view.node.attrs.type;
+        attrs.title = this.$form.find('[name="title"]').val();
+        attrs.width = this.#view.node.attrs.width;
+        attrs.height = this.#view.node.attrs.height;
 
-        // fixme this is only correct for media files
-        if(this.#view.node.attrs.type === 'embed') {
+        if (this.#view.node.attrs.type === 'embed') {
             attrs.url = this.#view.node.attrs.url; // keep the data uri
         } else {
             attrs.url = `${DOKU_BASE}lib/exe/fetch.php?cache=nocache&media=` + attrs.id;

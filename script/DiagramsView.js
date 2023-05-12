@@ -9,7 +9,9 @@ class DiagramsView extends AbstractNodeView {
         const elem = document.createElement(dgrSchemaSpecs[0]);
 
         Object.entries(dgrSchemaSpecs[1]).forEach(([key, value]) => {
-            elem.setAttribute(key, value);
+            if (value) {
+                elem.setAttribute(key, value);
+            }
         });
 
         this.dom = elem;
