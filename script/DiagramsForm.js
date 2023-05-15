@@ -28,7 +28,7 @@ class DiagramsForm extends KeyValueForm {
      * @internal Use DiagramsForm.getInstance() instead
      */
     constructor() {
-        const name = 'diagrams-form'; // FIXME localize
+        const name = LANG.plugins.diagrams.formtitle;
 
         const fields = [
             {
@@ -61,6 +61,7 @@ class DiagramsForm extends KeyValueForm {
         const selectButton = document.createElement('button');
         selectButton.innerText = LANG.plugins.diagrams.selectSource;
         selectButton.className = 'diagrams-btn-select';
+        selectButton.type = 'button';
         selectButton.addEventListener('click', () =>
             window.open(
                 `${DOKU_BASE}lib/exe/mediamanager.php?ns=${encodeURIComponent(JSINFO.namespace)}&onselect=dMediaSelect`,
@@ -76,6 +77,7 @@ class DiagramsForm extends KeyValueForm {
         editButton.className = 'diagrams-btn-edit';
         editButton.id = 'diagrams__btn-edit';
         editButton.innerText = LANG.plugins.diagrams.editButton;
+        editButton.type = 'button';
         this.$form.find('fieldset').prepend(editButton);
 
         editButton.addEventListener('click', event => {

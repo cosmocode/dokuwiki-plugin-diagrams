@@ -53,7 +53,6 @@ class DiagramsView extends AbstractNodeView {
     deselectNode() {
         this.dom.classList.remove('ProseMirror-selectednode');
         this.dForm.hide();
-        this.dForm.off('submit'); // FIXME is this needed/wanted?
     }
 
     /**
