@@ -62,6 +62,13 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
         return new DiagramsView(node, outerview, getPos);
     };
 
-    window.Prosemirror.pluginMenuItemDispatchers.push(DiagramsMenuItemDispatcherMediaFile);
-    window.Prosemirror.pluginMenuItemDispatchers.push(DiagramsMenuItemDispatcherEmbedded);
+    // noinspection JSBitwiseOperatorUsage
+    if (JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 1)) {
+        window.Prosemirror.pluginMenuItemDispatchers.push(DiagramsMenuItemDispatcherMediaFile);
+    }
+
+    // noinspection JSBitwiseOperatorUsage
+    if (JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 2)) {
+        window.Prosemirror.pluginMenuItemDispatchers.push(DiagramsMenuItemDispatcherEmbedded);
+    }
 });
