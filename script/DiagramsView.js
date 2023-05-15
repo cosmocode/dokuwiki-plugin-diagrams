@@ -16,7 +16,6 @@ class DiagramsView extends AbstractNodeView {
      * @param {object} attrs
      */
     renderNode(attrs) {
-        console.log('renderNode', attrs, this.node.attrs);
         const schemaSpec = this.node.type.spec.toDOM(this.node);
         const elem = document.createElement(schemaSpec[0]);
 
@@ -37,7 +36,6 @@ class DiagramsView extends AbstractNodeView {
      */
     selectNode() {
         this.dom.classList.add('ProseMirror-selectednode');
-        console.log('selectNode');
 
         this.#dForm = new DiagramsForm(
             this.node.attrs,
@@ -54,7 +52,6 @@ class DiagramsView extends AbstractNodeView {
      */
     deselectNode() {
         this.dom.classList.remove('ProseMirror-selectednode');
-        console.log('deselectNode');
     }
 
     /**
@@ -63,7 +60,6 @@ class DiagramsView extends AbstractNodeView {
      * @param {object} newAttrs
      */
     dispatchNodeUpdate(newAttrs) {
-        console.log('dispatchNodeUpdate', newAttrs);
         const nodeStartPos = this.getPos();
         this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
             nodeStartPos,

@@ -22,6 +22,83 @@ class DiagramsForm extends KeyValueForm {
      */
     constructor(attributes, onsubmit, onclose = null) {
         const name = LANG.plugins.diagrams.formtitle;
+        const fields = DiagramsForm.#getFields(attributes);
+
+        super(name, fields);
+        this.#attributes = {
+            ...this.#attributes,
+            ...attributes
+        };
+        this.#onsubmitCB = onsubmit;
+        this.#oncloseCB = onclose;
+
+        // attach handlers
+        this.$form.on('submit', (event) => {
+            event.preventDefault(); // prevent form submission
+            this.#onsubmitCB(this.#attributes);
+            this.hide(); // close dialog
+        });
+
+        this.$form.on('dialogclose', (event) => {
+            if (this.#oncloseCB) this.#oncloseCB();
+            this.destroy();
+        });
+
+        this.$form.on('change', 'input,select', this.updateInternalState.bind(this));
+
+        this.#getButtonsMediaManager(this.#attributes);
+        this.#getButtonsEditor(this.#attributes);
+
+        this.updateFormState();
+    }
+
+    #getButtonsEditor(attributes) {
+        if (attributes.type === 'embed' || attributes.id) {
+            const editButton = document.createElement('button');
+            editButton.className = 'diagrams-btn-edit';
+            editButton.id = 'diagrams__btn-edit';
+            editButton.innerText = LANG.plugins.diagrams.editButton;
+            editButton.type = 'button';
+            this.$form.find('fieldset').prepend(editButton);
+
+            editButton.addEventListener('click', event => {
+                event.preventDefault(); // prevent form submission
+
+                if (attributes.type === 'mediafile') {
+                    const diagramsEditor = new DiagramsEditor(this.onSavedMediaFile.bind(this, attributes.id));
+                    diagramsEditor.editMediaFile(attributes.id);
+                } else {
+                    const diagramsEditor = new DiagramsEditor();
+                    diagramsEditor.editMemory(attributes.svg, this.onSaveEmbed.bind(this));
+                }
+            });
+        }
+    }
+
+    #getButtonsMediaManager(attributes) {
+        // media manager button
+        if (attributes.type === 'mediafile') {
+            const selectButton = document.createElement('button');
+            selectButton.innerText = LANG.plugins.diagrams.selectSource;
+            selectButton.className = 'diagrams-btn-select';
+            selectButton.type = 'button';
+            selectButton.addEventListener('click', () =>
+                window.open(
+                    `${DOKU_BASE}lib/exe/mediamanager.php?ns=${encodeURIComponent(JSINFO.namespace)}&onselect=dMediaSelect`,
+                    'mediaselect',
+                    'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes',
+                )
+            );
+            this.$form.find('fieldset').prepend(selectButton);
+            window.dMediaSelect = this.mediaSelect.bind(this); // register as global function
+        }
+    }
+
+    /**
+     * Define form fields depending on type
+     * @returns {object}
+     */
+    static #getFields(attributes) {
         const fields = [
             {
                 type: 'select', 'label': LANG.plugins.diagrams.alignment, 'name': 'align', 'options':
@@ -45,72 +122,7 @@ class DiagramsForm extends KeyValueForm {
                 }
             );
         }
-
-
-        super(name, fields);
-        this.#attributes = {
-            ...this.#attributes,
-            ...attributes
-        };
-        this.#onsubmitCB = onsubmit;
-        this.#oncloseCB = onclose;
-
-        this.$form.on('submit', (event) => {
-            event.preventDefault(); // prevent form submission
-            this.#onsubmitCB(this.#attributes);
-            this.hide(); // close dialog
-        });
-
-
-        this.$form.on('dialogclose', (event) => {
-            if (this.#oncloseCB) this.#oncloseCB();
-            this.destroy();
-        });
-
-        this.$form.on('change', 'input,select', this.updateInternalState.bind(this));
-
-        // media manager button
-        if (attributes.type === 'mediafile') {
-            const selectButton = document.createElement('button');
-            selectButton.innerText = LANG.plugins.diagrams.selectSource;
-            selectButton.className = 'diagrams-btn-select';
-            selectButton.type = 'button';
-            selectButton.addEventListener('click', () =>
-                window.open(
-                    `${DOKU_BASE}lib/exe/mediamanager.php?ns=${encodeURIComponent(JSINFO.namespace)}&onselect=dMediaSelect`,
-                    'mediaselect',
-                    'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes',
-                )
-            );
-            this.$form.find('fieldset').prepend(selectButton);
-            window.dMediaSelect = this.mediaSelect.bind(this); // register as global function
-        }
-
-        // editor button
-        if (attributes.type === 'embed' || attributes.id) {
-            const editButton = document.createElement('button');
-            editButton.className = 'diagrams-btn-edit';
-            editButton.id = 'diagrams__btn-edit';
-            editButton.innerText = LANG.plugins.diagrams.editButton;
-            editButton.type = 'button';
-            this.$form.find('fieldset').prepend(editButton);
-
-            editButton.addEventListener('click', event => {
-                event.preventDefault(); // prevent form submission
-
-
-                if (this.#attributes.type === 'mediafile') {
-                    const diagramsEditor = new DiagramsEditor(this.onSavedMediaFile.bind(this, this.#attributes.id));
-                    diagramsEditor.editMediaFile(this.#attributes.id);
-                } else {
-                    const diagramsEditor = new DiagramsEditor();
-                    diagramsEditor.editMemory(this.#attributes.svg, this.onSaveEmbed.bind(this));
-                }
-
-            });
-        }
-
-        this.updateFormState();
+        return fields;
     }
 
     /**
@@ -180,7 +192,6 @@ class DiagramsForm extends KeyValueForm {
      * @param {string} mediaid the picked media ID
      */
     mediaSelect(edid, mediaid) {
-        console.log('mediaSelect', edid, mediaid, arguments);
         this.#attributes.id = mediaid;
         this.updateFormState();
     }
