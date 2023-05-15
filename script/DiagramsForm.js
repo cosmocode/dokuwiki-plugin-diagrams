@@ -39,6 +39,7 @@ class DiagramsForm extends KeyValueForm {
             this.hide(); // close dialog
         });
 
+
         this.$form.on('dialogclose', (event) => {
             if (this.#oncloseCB) this.#oncloseCB();
             this.destroy();
@@ -69,7 +70,7 @@ class DiagramsForm extends KeyValueForm {
                     diagramsEditor.editMediaFile(attributes.id);
                 } else {
                     const diagramsEditor = new DiagramsEditor();
-                    diagramsEditor.editMemory(attributes.svg, this.onSaveEmbed.bind(this));
+                    diagramsEditor.editMemory(attributes.url, this.onSaveEmbed.bind(this));
                 }
             });
         }
@@ -149,12 +150,10 @@ class DiagramsForm extends KeyValueForm {
     }
 
     /**
-     * Calculate the Display URL for the current mediafile or SVG embed
+     * Calculate the Display URL for the current mediafile
      */
     updateInternalUrl() {
-        if (this.#attributes.type === 'embed') {
-            this.#attributes.url = 'data:image/svg+xml;base64,' + btoa(this.#attributes.svg);
-        } else {
+        if (this.#attributes.type === 'mediafile') {
             this.#attributes.url = `${DOKU_BASE}lib/exe/fetch.php?media=${this.#attributes.id}`;
         }
     }
@@ -177,7 +176,7 @@ class DiagramsForm extends KeyValueForm {
      * Save an embedded diagram back to the editor
      */
     onSaveEmbed(svg) {
-        this.#attributes.svg = svg;
+        this.#attributes.url = 'data:image/svg+xml;base64,' + btoa(svg);
         this.updateFormState();
         return true;
     }
