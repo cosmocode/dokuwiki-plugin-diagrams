@@ -1,4 +1,7 @@
-class DiagramsMenuItemDispatcher extends AbstractMenuItemDispatcher {
+class DiagramsMenuItemDispatcherMediaFile extends AbstractMenuItemDispatcher {
+
+    static type = 'mediafile';
+
     static isAvailable(schema) {
         return !!schema.nodes.diagrams;
     }
@@ -10,7 +13,7 @@ class DiagramsMenuItemDispatcher extends AbstractMenuItemDispatcher {
 
         return new MenuItem({
             command: (state, dispatch) => {
-                const { $from } = state.selection;
+                const {$from} = state.selection;
                 const index = $from.index();
                 if (!$from.parent.canReplaceWith(index, index, schema.nodes.diagrams)) {
                     return false;
@@ -22,28 +25,30 @@ class DiagramsMenuItemDispatcher extends AbstractMenuItemDispatcher {
                         return false;
                     });
 
-                    const dForm = DiagramsForm.getInstance();
-                    if (textContent) {
-                        dForm.setSource(textContent);
-                    }
 
-                    dForm.show();
-
-                    dForm.on('submit', DiagramsForm.resolveSubmittedLinkData(
-                        {},
-                        dForm,
-                        (newAttrs) => {
-                            dispatch(state.tr.replaceSelectionWith(schema.nodes.diagrams.create(newAttrs)));
-                            dForm.off('submit');
-                            dForm.hide();
-                            dForm.resetForm();
+                    const dForm = new DiagramsForm(
+                        {
+                            title: textContent ? textContent : '',
+                            type: this.type,
                         },
-                    ));
+                        (attributes) => {
+                            dispatch(
+                                state.tr.replaceSelectionWith(
+                                    schema.nodes.diagrams.create(attributes)
+                                )
+                            )
+                        }
+                    );
+                    dForm.show();
                 }
                 return true;
             },
             icon: document.createElement('span'), // FIXME
-            label: LANG.plugins.diagrams['PMMenuItem'],
+            label: LANG.plugins.diagrams['PMMenuItem-' + this.type],
         });
     }
+}
+
+class DiagramsMenuItemDispatcherEmbedded extends DiagramsMenuItemDispatcherMediaFile {
+    static type = 'embed';
 }

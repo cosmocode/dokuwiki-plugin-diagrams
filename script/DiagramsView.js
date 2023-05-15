@@ -3,12 +3,8 @@
  */
 class DiagramsView extends AbstractNodeView {
     /** {DiagramsForm} The form to edit the node attributes */
-    dForm = null;
+    #dForm = null;
 
-    constructor(node, view, getPos) {
-        super(node, view, getPos);
-        this.dForm = DiagramsForm.getInstance();
-    }
 
     /**
      * Render the node into this.dom
@@ -20,6 +16,7 @@ class DiagramsView extends AbstractNodeView {
      * @param {object} attrs
      */
     renderNode(attrs) {
+        console.log('renderNode', attrs, this.node.attrs);
         const schemaSpec = this.node.type.spec.toDOM(this.node);
         const elem = document.createElement(schemaSpec[0]);
 
@@ -40,9 +37,14 @@ class DiagramsView extends AbstractNodeView {
      */
     selectNode() {
         this.dom.classList.add('ProseMirror-selectednode');
+        console.log('selectNode');
 
-        this.dForm.updateFormFromView(this);
-        this.dForm.show();
+        this.#dForm = new DiagramsForm(
+            this.node.attrs,
+            this.dispatchNodeUpdate.bind(this),
+            this.deselectNode.bind(this)
+        );
+        this.#dForm.show();
     }
 
     /**
@@ -52,7 +54,7 @@ class DiagramsView extends AbstractNodeView {
      */
     deselectNode() {
         this.dom.classList.remove('ProseMirror-selectednode');
-        this.dForm.hide();
+        console.log('deselectNode');
     }
 
     /**
@@ -61,9 +63,8 @@ class DiagramsView extends AbstractNodeView {
      * @param {object} newAttrs
      */
     dispatchNodeUpdate(newAttrs) {
-        this.renderNode(newAttrs); // FIXME is this necessary?
+        console.log('dispatchNodeUpdate', newAttrs);
         const nodeStartPos = this.getPos();
-
         this.outerView.dispatch(this.outerView.state.tr.setNodeMarkup(
             nodeStartPos,
             null,

@@ -3,44 +3,33 @@
  */
 class DiagramsForm extends KeyValueForm {
 
-    /** {DiagramsForm} The singleton instance */
-    static #instance = null;
+    #attributes = {
+        id: '',
+        svg: '',
+        type: '',
+        title: '',
+        url: '',
+        width: null,
+        height: null,
+        align: ''
+    };
 
-    /** {DiagramsView} The view of the currently selected node */
-    #view = null;
-
-    /**
-     * Get the singleton instance of this class
-     *
-     * @returns {DiagramsForm}
-     */
-    static getInstance() {
-        if (!this.#instance) {
-            this.#instance = new DiagramsForm();
-        }
-
-        return this.#instance;
-    }
+    #onsubmitCB = null;
+    #oncloseCB = null;
 
     /**
      * Initialize the KeyValue form with fields and event handlers
-     *
-     * @internal Use DiagramsForm.getInstance() instead
      */
-    constructor() {
+    constructor(attributes, onsubmit, onclose = null) {
         const name = LANG.plugins.diagrams.formtitle;
-
         const fields = [
             {
-                label: LANG.plugins.diagrams.mediaSource, name: 'src'
-            },
-            {
-                type: 'select', 'label': LANG.plugins.diagrams.alignment, 'options':
+                type: 'select', 'label': LANG.plugins.diagrams.alignment, 'name': 'align', 'options':
                     [
-                        {name: 'alignment', value: '', label: ''},
-                        {name: 'alignment', value: 'left', label: LANG.plugins.diagrams.left},
-                        {name: 'alignment', value: 'right', label: LANG.plugins.diagrams.right},
-                        {name: 'alignment', value: 'center', label: LANG.plugins.diagrams.center}
+                        {value: '', label: ''},
+                        {value: 'left', label: LANG.plugins.diagrams.left},
+                        {value: 'right', label: LANG.plugins.diagrams.right},
+                        {value: 'center', label: LANG.plugins.diagrams.center}
                     ]
             },
             {
@@ -48,111 +37,125 @@ class DiagramsForm extends KeyValueForm {
             }
         ];
 
+        if (attributes.type === 'mediafile') {
+            fields.unshift(
+                {
+                    label: LANG.plugins.diagrams.mediaSource,
+                    name: 'id'
+                }
+            );
+        }
+
+
         super(name, fields);
+        this.#attributes = {
+            ...this.#attributes,
+            ...attributes
+        };
+        this.#onsubmitCB = onsubmit;
+        this.#oncloseCB = onclose;
 
         this.$form.on('submit', (event) => {
             event.preventDefault(); // prevent form submission
-            this.updateViewFromForm();
-            this.#view.deselectNode();
+            this.#onsubmitCB(this.#attributes);
+            this.hide(); // close dialog
         });
 
+
+        this.$form.on('dialogclose', (event) => {
+            if (this.#oncloseCB) this.#oncloseCB();
+            this.destroy();
+        });
+
+        this.$form.on('change', 'input,select', this.updateInternalState.bind(this));
 
         // media manager button
-        const selectButton = document.createElement('button');
-        selectButton.innerText = LANG.plugins.diagrams.selectSource;
-        selectButton.className = 'diagrams-btn-select';
-        selectButton.type = 'button';
-        selectButton.addEventListener('click', () =>
-            window.open(
-                `${DOKU_BASE}lib/exe/mediamanager.php?ns=${encodeURIComponent(JSINFO.namespace)}&onselect=dMediaSelect`,
-                'mediaselect',
-                'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes',
-            )
-        );
-        this.$form.find('fieldset').prepend(selectButton);
-        window.dMediaSelect = this.mediaSelect.bind(this); // register as global function
+        if (attributes.type === 'mediafile') {
+            const selectButton = document.createElement('button');
+            selectButton.innerText = LANG.plugins.diagrams.selectSource;
+            selectButton.className = 'diagrams-btn-select';
+            selectButton.type = 'button';
+            selectButton.addEventListener('click', () =>
+                window.open(
+                    `${DOKU_BASE}lib/exe/mediamanager.php?ns=${encodeURIComponent(JSINFO.namespace)}&onselect=dMediaSelect`,
+                    'mediaselect',
+                    'width=750,height=500,left=20,top=20,scrollbars=yes,resizable=yes',
+                )
+            );
+            this.$form.find('fieldset').prepend(selectButton);
+            window.dMediaSelect = this.mediaSelect.bind(this); // register as global function
+        }
 
         // editor button
-        const editButton = document.createElement('button');
-        editButton.className = 'diagrams-btn-edit';
-        editButton.id = 'diagrams__btn-edit';
-        editButton.innerText = LANG.plugins.diagrams.editButton;
-        editButton.type = 'button';
-        this.$form.find('fieldset').prepend(editButton);
+        if (attributes.type === 'embed' || attributes.id) {
+            const editButton = document.createElement('button');
+            editButton.className = 'diagrams-btn-edit';
+            editButton.id = 'diagrams__btn-edit';
+            editButton.innerText = LANG.plugins.diagrams.editButton;
+            editButton.type = 'button';
+            this.$form.find('fieldset').prepend(editButton);
 
-        editButton.addEventListener('click', event => {
-            event.preventDefault(); // prevent form submission
+            editButton.addEventListener('click', event => {
+                event.preventDefault(); // prevent form submission
 
-            const url = this.#view.node.attrs.url;
-            const mediaid = this.#view.node.attrs.id;
 
-            if (this.#view.node.attrs.type === 'mediafile') {
-                const diagramsEditor = new DiagramsEditor(this.onSavedMediaFile.bind(this, url));
-                diagramsEditor.editMediaFile(mediaid);
-            } else {
-                const diagramsEditor = new DiagramsEditor();
-                diagramsEditor.editMemory(url, this.onSaveEmbed.bind(this));
-            }
+                if (this.#attributes.type === 'mediafile') {
+                    const diagramsEditor = new DiagramsEditor(this.onSavedMediaFile.bind(this, this.#attributes.id));
+                    diagramsEditor.editMediaFile(this.#attributes.id);
+                } else {
+                    const diagramsEditor = new DiagramsEditor();
+                    diagramsEditor.editMemory(this.#attributes.svg, this.onSaveEmbed.bind(this));
+                }
 
-        });
-    }
-
-    /**
-     * Update the form to reflect the new selected nodeView
-     *
-     * @param {DiagramsView} view
-     */
-    updateFormFromView(view) {
-        this.#view = view;
-
-        this.$form.find('[name="src"]').val(view.node.attrs.id);
-        this.$form.find('[name="title"]').val(view.node.attrs.title);
-
-        const align = view.node.attrs.align;
-        this.$form.find('[name="alignment"]').prop('selected', '');
-        this.$form.find(`[name="alignment"][value="${align}"]`).prop('selected', 'selected');
-    }
-
-    /**
-     * Update the nodeView to reflect the new form values
-     *
-     * @todo the nodeView might not be set, in that case we probably need to create a new one
-     */
-    updateViewFromForm() {
-        const newAttrs = this.getAttributes();
-        this.#view.dispatchNodeUpdate(newAttrs);
-    }
-
-    /**
-     * Construct a new attributes object from the current form values
-     *
-     * @returns {object}
-     */
-    getAttributes() {
-        const attrs = {};
-        attrs.id = this.$form.find('[name="src"]').val();
-        attrs.align = this.$form.find('[name="alignment"]:selected').val();
-        attrs.title = this.$form.find('[name="title"]').val();
-        attrs.width = this.#view.node.attrs.width;
-        attrs.height = this.#view.node.attrs.height;
-        attrs.type = this.#view.node.attrs.type;
-
-        if (this.#view.node.attrs.type === 'embed') {
-            attrs.url = this.#view.node.attrs.url; // keep the data uri
-        } else {
-            attrs.url = `${DOKU_BASE}lib/exe/fetch.php?cache=nocache&media=` + attrs.id;
+            });
         }
-        return attrs;
+
+        this.updateFormState();
+    }
+
+    /**
+     * Updates the form to reflect the current internal attributes
+     */
+    updateFormState() {
+        for (const [key, value] of Object.entries(this.#attributes)) {
+            this.$form.find('[name="' + key + '"]').val(value);
+        }
+        this.updateInternalUrl();
+    }
+
+    /**
+     * Update the internal attributes to reflect the current form state
+     */
+    updateInternalState() {
+        for (const [key, value] of Object.entries(this.#attributes)) {
+            const $elem = this.$form.find('[name="' + key + '"]');
+            if ($elem.length) {
+                this.#attributes[key] = $elem.val();
+            }
+        }
+        this.updateInternalUrl();
+    }
+
+    /**
+     * Calculate the Display URL for the current mediafile or SVG embed
+     */
+    updateInternalUrl() {
+        if (this.#attributes.type === 'embed') {
+            this.#attributes.url = 'data:image/svg+xml;base64,' + btoa(this.#attributes.svg);
+        } else {
+            this.#attributes.url = `${DOKU_BASE}lib/exe/fetch.php?media=${this.#attributes.id}`;
+        }
     }
 
     /**
      * After svaing a media file reload the src for all images using it
      *
      * @see https://stackoverflow.com/a/66312176
-     * @param {string} url
+     * @param {string} mediaid
      * @returns {Promise<void>}
      */
-    async onSavedMediaFile(url) {
+    async onSavedMediaFile(mediaid) {
+        const url = `${DOKU_BASE}lib/exe/fetch.php?cache=nocache&media=${mediaid}`;
         await fetch(url, {cache: 'reload', mode: 'no-cors'});
         document.body.querySelectorAll(`img[src='${url}']`)
             .forEach(img => img.src = url)
@@ -160,12 +163,10 @@ class DiagramsForm extends KeyValueForm {
 
     /**
      * Save an embedded diagram back to the editor
-     *
-     * @todo if the nodeView is not set, we need to create a new one
      */
     onSaveEmbed(svg) {
-        this.#view.node.attrs.url = 'data:image/svg+xml;base64,' + btoa(svg);
-        this.updateViewFromForm();
+        this.#attributes.svg = svg;
+        this.updateFormState();
         return true;
     }
 
@@ -179,6 +180,8 @@ class DiagramsForm extends KeyValueForm {
      * @param {string} mediaid the picked media ID
      */
     mediaSelect(edid, mediaid) {
-        this.$form.find('[name="src"]').val(mediaid);
+        console.log('mediaSelect', edid, mediaid, arguments);
+        this.#attributes.id = mediaid;
+        this.updateFormState();
     }
 }

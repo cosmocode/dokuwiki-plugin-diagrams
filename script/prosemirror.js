@@ -62,5 +62,6 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
         return new DiagramsView(node, outerview, getPos);
     };
 
-    window.Prosemirror.pluginMenuItemDispatchers.push(DiagramsMenuItemDispatcher);
+    window.Prosemirror.pluginMenuItemDispatchers.push(DiagramsMenuItemDispatcherMediaFile);
+    window.Prosemirror.pluginMenuItemDispatchers.push(DiagramsMenuItemDispatcherEmbedded);
 });
