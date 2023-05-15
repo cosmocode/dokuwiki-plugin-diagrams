@@ -14,7 +14,7 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
                 align: {default: ''}
             },
             group: "inline",
-            draggable: false,
+            draggable: true,
 
             /**
              * Render the node as HTML
