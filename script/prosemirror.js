@@ -15,6 +15,15 @@ jQuery(document).on('PROSEMIRROR_API_INITIALIZED', () => {
             },
             group: "inline",
             draggable: false,
+
+            /**
+             * Render the node as HTML
+             *
+             * Maps node attributes to HTML attributes
+             *
+             * @param node
+             * @returns {[string,object]}  [tagname, attributes]
+             */
             toDOM: function toDOM(node) {
                 let alignclass = node.attrs.align;
                 if (alignclass.length !== 0) {

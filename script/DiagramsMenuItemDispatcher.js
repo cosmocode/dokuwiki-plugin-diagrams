@@ -22,7 +22,7 @@ class DiagramsMenuItemDispatcher extends AbstractMenuItemDispatcher {
                         return false;
                     });
 
-                    const dForm = new DiagramsForm('diagrams-form');
+                    const dForm = DiagramsForm.getInstance();
                     if (textContent) {
                         dForm.setSource(textContent);
                     }
