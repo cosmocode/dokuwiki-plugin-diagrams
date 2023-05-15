@@ -1,11 +1,46 @@
+/**
+ * Creates a menu entry to insert a new mediafile diagram
+ */
 class DiagramsMenuItemDispatcherMediaFile extends AbstractMenuItemDispatcher {
-
+    /** The type of the node to be inserted */
     static type = 'mediafile';
 
+    /**
+     * Check if the schema is available
+     *
+     * @param schema
+     * @returns {boolean}
+     */
     static isAvailable(schema) {
         return !!schema.nodes.diagrams;
     }
 
+    /**
+     * Get the menu icon
+     *
+     * @todo the inline styles here should be part of the prosemirror plugin default styles
+     * @returns {HTMLSpanElement}
+     */
+    static getIcon() {
+        const svgIcon = document.createElement('img');
+        svgIcon.src = DOKU_BASE + 'lib/plugins/diagrams/img/diagramsnet.svg';
+        svgIcon.style.width = '1.2em';
+        svgIcon.style.height = '1.2em';
+        svgIcon.style.float = 'none';
+
+        const wrapper = document.createElement('span');
+        wrapper.appendChild(svgIcon);
+        wrapper.className = 'menuicon';
+
+        return wrapper;
+    }
+
+    /**
+     * Return the menu item
+     *
+     * @param schema
+     * @returns {MenuItem}
+     */
     static getMenuItem(schema) {
         if (!this.isAvailable(schema)) {
             throw new Error('Diagrams is missing in provided Schema!');
@@ -43,12 +78,15 @@ class DiagramsMenuItemDispatcherMediaFile extends AbstractMenuItemDispatcher {
                 }
                 return true;
             },
-            icon: document.createElement('span'), // FIXME
+            icon: this.getIcon(),
             label: LANG.plugins.diagrams['PMMenuItem-' + this.type],
         });
     }
 }
 
+/**
+ * Creates a menu entry to insert a new embedded diagram
+ */
 class DiagramsMenuItemDispatcherEmbedded extends DiagramsMenuItemDispatcherMediaFile {
     static type = 'embed';
 }
