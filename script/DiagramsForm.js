@@ -133,6 +133,7 @@ class DiagramsForm extends KeyValueForm {
         attrs.title = this.$form.find('[name="title"]').val();
         attrs.width = this.#view.node.attrs.width;
         attrs.height = this.#view.node.attrs.height;
+        attrs.type = this.#view.node.attrs.type;
 
         if (this.#view.node.attrs.type === 'embed') {
             attrs.url = this.#view.node.attrs.url; // keep the data uri

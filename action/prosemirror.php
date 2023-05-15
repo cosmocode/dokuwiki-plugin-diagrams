@@ -91,14 +91,11 @@ class action_plugin_diagrams_prosemirror extends \dokuwiki\Extension\ActionPlugi
 
         $event->preventDefault();
 
-        // FIXME for embedded mode we need a more custom node
-
         if($event->data['node']['attrs']['type'] === 'mediafile') {
             $node = new ImageNode($event->data['node'], $event->data['parent']);
         } else {
             $node = new DiagramsNode($event->data['node'], $event->data['parent']);
         }
-
 
         $event->data['newNode'] = $node;
     }
