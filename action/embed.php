@@ -46,7 +46,7 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         $pos = $INPUT->int('pos');
         $len = $INPUT->int('len');
 
-        if (auth_quickaclcheck($id) < AUTH_READ) { // FIXME should we check for EDIT perms on read as well?
+        if (auth_quickaclcheck($id) < AUTH_EDIT) {
             http_status(403);
             return;
         }

@@ -25,3 +25,4 @@ $lang['js']['center'] = 'center';
 $lang['js']['right'] = 'right';
 $lang['js']['title'] = 'Title';
 $lang['js']['formtitle'] = 'Diagram Properties';
+$lang['js']['mediafileIsNotDiagram'] = 'The selected media file is not a diagram';

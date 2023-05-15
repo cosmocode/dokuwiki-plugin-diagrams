@@ -17,8 +17,10 @@
  * It manages displaying and communicating with the editor, most importantly in manages loading
  * and saving diagrams.
  *
+ * Note: devs should take care to ensure that only ever one instance of this class is active at a time
+ * in the same window.
+ *
  * FIXME we're not catching any fetch exceptions currently. Should we?
- * FIXME should we somehow ensure that there is only ever one instance of this class?
  * @class
  */
 class DiagramsEditor {

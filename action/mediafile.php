@@ -24,6 +24,7 @@ class action_plugin_diagrams_mediafile extends DokuWiki_Action_Plugin
 
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleEditCheck');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleNamespaceCheck');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleIsDiagramCheck');
         $controller->register_hook('MEDIA_SENDFILE', 'BEFORE', $this, 'handleCSP');
 
         $this->helper = plugin_load('helper', 'diagrams');
@@ -58,6 +59,35 @@ class action_plugin_diagrams_mediafile extends DokuWiki_Action_Plugin
         }
 
         echo json_encode($editable);
+    }
+
+    /**
+     * Check if the given media ID is a diagram
+     *
+     * @param Doku_Event $event AJAX_CALL_UNKNOWN
+     */
+    public function handleIsDiagramCheck(Doku_Event $event)
+    {
+        if ($event->data !== 'plugin_diagrams_mediafile_isdiagramcheck') return;
+        $event->preventDefault();
+        $event->stopPropagation();
+
+        global $INPUT;
+        $diagram = $INPUT->str('diagram');
+
+        $file = mediaFN(cleanID($diagram));
+        if (!file_exists($file)) {
+            http_status(404);
+            echo 0;
+            return;
+        }
+
+        if (!$this->helper->isDiagramFile($file)) {
+            http_status(403);
+            echo 0;
+        }
+
+        echo 1;
     }
 
     /**

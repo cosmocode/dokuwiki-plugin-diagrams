@@ -60,7 +60,7 @@ class DiagramsForm extends KeyValueForm {
             editButton.id = 'diagrams__btn-edit';
             editButton.innerText = LANG.plugins.diagrams.editButton;
             editButton.type = 'button';
-            this.$form.find('fieldset').prepend(editButton);
+            this.$form.find('fieldset').append(editButton);
 
             editButton.addEventListener('click', event => {
                 event.preventDefault(); // prevent form submission
@@ -186,11 +186,24 @@ class DiagramsForm extends KeyValueForm {
      *
      * This is globally registered as window.dMediaSelect
      *
-     * @todo if the given mediaid is not a diagram we need to show an error and ignore it
      * @param {string} edid ignored
      * @param {string} mediaid the picked media ID
      */
-    mediaSelect(edid, mediaid) {
+    async mediaSelect(edid, mediaid) {
+        const response = await fetch(
+            `${DOKU_BASE}lib/exe/ajax.php?call=plugin_diagrams_mediafile_isdiagramcheck&diagram=` +
+            encodeURIComponent(mediaid),
+            {
+                method: 'POST',
+                cache: 'no-cache',
+            }
+        );
+
+        if (!response.ok) {
+            alert(LANG.plugins.diagrams.mediafileIsNotDiagram);
+            return;
+        }
+
         this.#attributes.id = mediaid;
         this.updateFormState();
     }

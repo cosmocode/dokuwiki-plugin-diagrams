@@ -30,7 +30,7 @@ class DiagramsMediaManager {
      * @param mutationsList
      * @param observer
      */
-    #addEditButton(mutationsList, observer) {
+    async #addEditButton(mutationsList, observer) {
         for (let mutation of mutationsList) {
             // div.file has been filled with new content?
             if (mutation.type !== 'childList') continue;
@@ -42,15 +42,26 @@ class DiagramsMediaManager {
             const actionList = mutation.target.querySelector('ul.actions');
             if (actionList.querySelector('button.diagrams-btn')) continue; // already added
 
-            // create the button FIXME shouldn't we check if this is a diagram?
-            const editButton = document.createElement('button');
-            editButton.classList.add('diagrams-btn');
-            editButton.innerText = LANG.plugins.diagrams.editButton;
-            editButton.addEventListener('click', async () => {
-                const editor = new DiagramsEditor();
-                await editor.editMediaFile(svgLink.innerText);
-            });
-            actionList.appendChild(editButton);
+            // ensure media file is actually an editable diagram
+            const response = await fetch(
+                DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_mediafile_editcheck&diagrams=' +
+                encodeURIComponent(JSON.stringify([svgLink.innerText])),
+                {
+                    method: 'GET',
+                    cache: 'no-cache',
+                }
+            );
+
+            if (response.ok && (await response.json())[0] === svgLink.innerText) {
+                const editButton = document.createElement('button');
+                editButton.classList.add('diagrams-btn');
+                editButton.innerText = LANG.plugins.diagrams.editButton;
+                editButton.addEventListener('click', async () => {
+                    const editor = new DiagramsEditor();
+                    await editor.editMediaFile(svgLink.innerText);
+                });
+                actionList.appendChild(editButton);
+            }
         }
     }
 
