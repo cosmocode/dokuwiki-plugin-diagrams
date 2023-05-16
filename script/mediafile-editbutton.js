@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const button = document.createElement('button');
             button.className = 'diagrams-btn';
             button.innerText = LANG.plugins.diagrams.editButton;
+            button.title = LANG.plugins.diagrams.editButton;
             button.addEventListener('click', event => {
                 event.preventDefault();
                 const diagramsEditor = new DiagramsEditor(() => {

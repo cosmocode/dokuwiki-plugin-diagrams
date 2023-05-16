@@ -74,29 +74,34 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
     {
         if ($format !== 'xhtml') return false;
 
-        $imageAttributes = array(
+        $baseAttributes = [
             'class' => 'media',
             'width' => $data['width'] ?: '',
             'height' => $data['height'] ?: '',
-            'title' => $data['title'],
-        );
+            'title' => $data['title'] ?: '',
+        ];
 
 
         if (is_a($renderer, 'renderer_plugin_dw2pdf')) {
+            $imageAttributes = $baseAttributes;
             $imageAttributes['align'] = $data['align'];
             $imageAttributes['src'] = $data['url'];
             $renderer->doc .= '<img ' . buildAttributes($imageAttributes) . '/>';
         } else {
-            $imageAttributes['class'] .= ' diagrams-svg';
-            $imageAttributes['class'] .= ' media' . $data['align'];
+            $wrapperAttributes = $baseAttributes;
+            $wrapperAttributes['class'] .= ' diagrams-svg-wrapper media' . $data['align'];
+
+            $imageAttributes = [];
+            $imageAttributes['class'] = 'diagrams-svg';
             $imageAttributes['data'] = $data['url'];
             $imageAttributes['data-id'] = cleanID($data['src']);
             $imageAttributes['type'] = 'image/svg+xml';
             $imageAttributes['data-pos'] = $data['pos'] ?: '';
             $imageAttributes['data-len'] = $data['len'] ?: '';
 
-            $tag = '<object %s></object>';
-            $renderer->doc .= sprintf($tag, buildAttributes($imageAttributes, true));
+            $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
+            $wrapper = sprintf('<div %s>%s</div>', buildAttributes($wrapperAttributes, true), $image);
+            $renderer->doc .= $wrapper;
         }
 
         return true;

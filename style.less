@@ -13,9 +13,33 @@ a.plugin_diagrams_create {
   }
 }
 
-// in-page edit button
-button.diagrams-btn {
-  display: block;
+// in-page display
+.diagrams-svg-wrapper {
+  overflow: auto;
+  display: inline-block; // overwritten by base media-align classes
+  width: fit-content;
+
+  // these match the standard dokuwiki template's img alignment
+  &.media {
+    margin: .2em 0;
+  }
+
+  &.medialeft {
+    margin: .2em 1em .2em 0;
+  }
+
+  &.mediaright {
+    margin: .2em 0 .2em 1em;
+  }
+
+  &.mediacenter {
+    margin: .2em auto;
+  }
+
+  // edit button
+  button.diagrams-btn {
+    display: block;
+  }
 }
 
 // prosemirror node view
