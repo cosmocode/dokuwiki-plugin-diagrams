@@ -62,6 +62,7 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         }
 
         $svg = rawWiki($id);
+        $svg = substr($svg, $pos, $len);
         if (!$this->helper->isDiagram($svg)) {
             http_status(400);
             return;
@@ -69,7 +70,7 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
 
         lock($id); // FIXME we probably need some periodic lock renewal while editing?
         header('Content-Type: image/svg+xml');
-        echo substr($svg, $pos, $len);
+        echo $svg;
     }
 
     /**
@@ -103,11 +104,6 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
 
         if (!checkSecurityToken()) {
             http_status(403);
-            return;
-        }
-
-        if (empty($svg) || substr($svg, 0, 4) !== '<svg') {
-            http_status(400);
             return;
         }
 
