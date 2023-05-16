@@ -26,6 +26,7 @@ class action_plugin_diagrams_mediafile extends DokuWiki_Action_Plugin
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleNamespaceCheck');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleIsDiagramCheck');
         $controller->register_hook('MEDIA_SENDFILE', 'BEFORE', $this, 'handleCSP');
+        $controller->register_hook('PLUGIN_MOVE_HANDLERS_REGISTER', 'BEFORE', $this, 'registerMoveHandler');
 
         $this->helper = plugin_load('helper', 'diagrams');
     }
@@ -118,5 +119,16 @@ class action_plugin_diagrams_mediafile extends DokuWiki_Action_Plugin
             $event->data['csp']['img-src'] = "self data:";
             $event->data['csp']['sandbox'] = "allow-popups allow-top-navigation allow-same-origin";
         }
+    }
+
+    /**
+     * Registers our handler with the move plugin
+     *
+     * @param Doku_Event $event
+     * @return void
+     */
+    public function registerMoveHandler(Doku_Event $event)
+    {
+        $event->data['handlers']['diagrams_mediafile'] = [new \syntax_plugin_diagrams_mediafile(), 'handleMove'];
     }
 }
