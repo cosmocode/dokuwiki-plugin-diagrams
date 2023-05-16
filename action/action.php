@@ -17,8 +17,18 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addJsinfo');
         $controller->register_hook('MEDIAMANAGER_STARTED', 'AFTER', $this, 'addJsinfo');
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'checkConf');
+        $controller->register_hook('PLUGIN_MOVE_HANDLERS_REGISTER', 'BEFORE', $this, 'registerMoveHandler');
+    }
 
-
+    /**
+     * Registers our handler with the move plugin
+     *
+     * @param Doku_Event $event
+     * @return void
+     */
+    public function registerMoveHandler(Doku_Event $event)
+    {
+        $event->data['handlers']['diagrams_mediafile'] = [new \syntax_plugin_diagrams_mediafile(), 'handleMove'];
     }
 
     /**
