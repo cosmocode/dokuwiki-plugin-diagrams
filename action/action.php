@@ -17,8 +17,6 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'addJsinfo');
         $controller->register_hook('MEDIAMANAGER_STARTED', 'AFTER', $this, 'addJsinfo');
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'checkConf');
-
-
     }
 
     /**
@@ -52,7 +50,4 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
             msg($this->getLang('missingConfig'), -1);
         }
     }
-
-
-
 }

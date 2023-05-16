@@ -62,6 +62,23 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
     }
 
     /**
+     * Handle rewrites made by the move plugin
+     *
+     * @param string $match
+     * @param int $state
+     * @param int $pos
+     * @param string $plugin
+     * @param helper_plugin_move_handler $handler
+     * @return void
+     */
+    public function handleMove($match, $state, $pos, $plugin, $handler)
+    {
+        if ($plugin !== 'diagrams_mediafile') return;
+
+        $handler->media($match, $state, $pos);
+    }
+
+    /**
      * Render the diagram SVG as <object> instead of <img> to allow links,
      * except when rendering to a PDF
      *
@@ -72,7 +89,13 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
      */
     public function render($format, Doku_Renderer $renderer, $data)
     {
-        if ($format !== 'xhtml') return false;
+        if ($format === 'metadata') {
+            $renderer->internalmedia($data['src']);
+            return true;
+        }
+        if ($format !== 'xhtml') {
+            return false;
+        }
 
         $baseAttributes = [
             'class' => 'media',
