@@ -33,7 +33,7 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
         if (!($this->getConf('mode') & Diagrams::MODE_MEDIA)) return;
 
         // grab all SVG images
-        $this->Lexer->addSpecialPattern('\{\{[^\}]+(?:\.svg)[^\}]*?\}\}',$mode,'plugin_diagrams_mediafile');
+        $this->Lexer->addSpecialPattern('\{\{[^\}]+(?:\.svg)[^\}]*?\}\}', $mode, 'plugin_diagrams_mediafile');
     }
 
     /**
@@ -109,6 +109,12 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes = $baseAttributes;
             $imageAttributes['align'] = $data['align'];
             $imageAttributes['src'] = $data['url'];
+
+            // if a PNG cache exists, use it
+            if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
+            $cachefile = getCacheName($data['svg'], '.diagrams.png');
+            if (file_exists($cachefile)) $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
+
             $renderer->doc .= '<img ' . buildAttributes($imageAttributes) . '/>';
         } else {
             $wrapperAttributes = $baseAttributes;

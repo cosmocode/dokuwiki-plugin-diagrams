@@ -160,6 +160,30 @@ class DiagramsEditor {
     }
 
     /**
+     * Save the PNG cache for a diagram
+     *
+     * @param {string} svg
+     * @param {string} png
+     * @returns {Promise<boolean>}
+     */
+    async #savePngCache(svg, png) {
+        const uploadUrl = DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_savecache' +
+            '&sectok=' + JSINFO['sectok'];
+
+        const body = new FormData();
+        body.set('svg', svg);
+        body.set('png', png);
+
+        const response = await fetch(uploadUrl, {
+            method: 'POST',
+            cache: 'no-cache',
+            body: body,
+        });
+
+        return response.ok;
+    }
+
+    /**
      * Create the editor iframe and attach the message listener
      */
     #createEditor() {
@@ -181,6 +205,24 @@ class DiagramsEditor {
     }
 
     /**
+     * Get the raw data from a data URI
+     *
+     * @param {string} dataUri
+     * @returns {string|null}
+     */
+    #decodeDataUri(dataUri) {
+        const matches = dataUri.match(/^data:(.*);base64,(.*)$/);
+        if (matches === null) return null;
+
+        return decodeURIComponent(
+            atob(matches[2])
+                .split('')
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+    }
+
+    /**
      * Handle messages from diagramming service
      *
      * @param {Event} event
@@ -194,6 +236,8 @@ class DiagramsEditor {
                 this.#diagramsEditor.contentWindow.postMessage(JSON.stringify({action: 'load', xml: this.#svg}), '*');
                 break;
             case 'save':
+                this.#svg = '';
+
                 // Save triggers an export to SVG action
                 this.#diagramsEditor.contentWindow.postMessage(
                     JSON.stringify({
@@ -205,26 +249,37 @@ class DiagramsEditor {
                 );
                 break;
             case 'export':
-                if (msg.format !== 'svg') {
-                    alert(LANG.plugins.diagrams.errorUnsupportedFormat);
-                    return;
-                }
-                const ok = await this.#saveCallback(
-                    // msg.data contains the SVG as a Base64 encoded data URI
-                    decodeURIComponent(atob(
-                        msg.data.split(',')[1])
-                        .split('')
-                        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                        .join('')
-                    )
-                );
-                if (ok) {
-                    this.#removeEditor();
-                    if (this.#postSaveCallback !== null) {
-                        this.#postSaveCallback();
+                if (msg.format === 'svg') {
+                    this.#svg = this.#decodeDataUri(msg.data);
+
+                    // export again as PNG
+                    this.#diagramsEditor.contentWindow.postMessage(
+                        JSON.stringify({
+                            action: 'export',
+                            format: 'png',
+                            spin: LANG.plugins.diagrams.saving
+                        }),
+                        '*'
+                    );
+                } else if (msg.format === 'png') {
+                    const png = msg.data; // keep as data uri, for binary safety
+                    let ok = await this.#savePngCache(this.#svg, png);
+                    if (!ok) {
+                        alert(LANG.plugins.diagrams.errorSaving);
+                        return;
+                    }
+                    ok = await this.#saveCallback(this.#svg);
+                    if (ok) {
+                        this.#removeEditor();
+                        if (this.#postSaveCallback !== null) {
+                            this.#postSaveCallback();
+                        }
+                    } else {
+                        alert(LANG.plugins.diagrams.errorSaving);
                     }
                 } else {
-                    alert(LANG.plugins.diagrams.errorSaving);
+                    alert(LANG.plugins.diagrams.errorUnsupportedFormat);
+                    return;
                 }
                 break;
             case 'exit':
