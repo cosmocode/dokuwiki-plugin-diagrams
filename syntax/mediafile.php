@@ -97,28 +97,29 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             return false;
         }
 
-        $baseAttributes = [
-            'class' => 'media',
-            'width' => $data['width'] ?: '',
-            'height' => $data['height'] ?: '',
-            'title' => $data['title'] ?: '',
-        ];
-
-
         if (is_a($renderer, 'renderer_plugin_dw2pdf')) {
-            $imageAttributes = $baseAttributes;
-            $imageAttributes['align'] = $data['align'];
-            $imageAttributes['src'] = $data['url'];
+            $imageAttributes = [
+                'class' => 'media',
+                'width' => $data['width'] ?: '',
+                'height' => $data['height'] ?: '',
+                'title' => $data['title'] ?: '',
+                'align' => $data['align'],
+                'src' => $data['url'],
+            ];
 
-            // if a PNG cache exists, use it
+            // if a PNG cache exists, use it instead of the real URL
             if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
             $cachefile = getCacheName($data['svg'], '.diagrams.png');
             if (file_exists($cachefile)) $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
 
             $renderer->doc .= '<img ' . buildAttributes($imageAttributes) . '/>';
         } else {
-            $wrapperAttributes = $baseAttributes;
-            $wrapperAttributes['class'] .= ' diagrams-svg-wrapper media' . $data['align'];
+            $wrapperAttributes = [];
+            $wrapperAttributes['title'] = $data['title'] ?: '';
+            $wrapperAttributes['class'] = 'media diagrams-svg-wrapper media' . $data['align'];
+            $wrapperAttributes['style'] = '';
+            if($data['width']) $wrapperAttributes['style'] .= 'width: ' . $data['width'] . 'px;';
+            if($data['height']) $wrapperAttributes['style'] .= 'height: ' . $data['height'] . 'px;';
 
             $imageAttributes = [];
             $imageAttributes['class'] = 'diagrams-svg';
