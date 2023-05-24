@@ -118,6 +118,8 @@ class action_plugin_diagrams_mediafile extends DokuWiki_Action_Plugin
         if ($event->data['ext'] === 'svg' && $this->helper->isDiagramFile($event->data['file'])) {
             $event->data['csp']['img-src'] = "self data:";
             $event->data['csp']['sandbox'] = "allow-popups allow-top-navigation allow-same-origin";
+            $event->data['csp']['style-src'] .= ' fonts.googleapis.com'; // Allow Google fonts
+            $event->data['csp']['font-src'] .= ' fonts.gstatic.com'; // Allow Google fonts
         }
     }
 
