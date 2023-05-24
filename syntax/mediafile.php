@@ -108,9 +108,11 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             ];
 
             // if a PNG cache exists, use it instead of the real URL
-            if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
-            $cachefile = getCacheName($data['svg'], '.diagrams.png');
-            if (file_exists($cachefile)) $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
+            if ($this->getConf('pngcache')) {
+                if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
+                $cachefile = getCacheName($data['svg'], '.diagrams.png');
+                if (file_exists($cachefile)) $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
+            }
 
             $renderer->doc .= '<img ' . buildAttributes($imageAttributes) . '/>';
         } else {

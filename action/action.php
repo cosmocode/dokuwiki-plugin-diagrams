@@ -67,6 +67,13 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
         $event->preventDefault();
         $event->stopPropagation();
 
+        // to not further complicate the JavaScript and because creating the PNG is essentially free,
+        // we always create the PNG but only save it if the cache is enabled
+        if (!$this->getConf('pngcache')) {
+            echo 'PNG cache disabled, call ignored';
+            return;
+        }
+
         global $INPUT;
 
         $svg = $INPUT->str('svg'); // raw svg
@@ -82,19 +89,19 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
             return;
         }
 
-        if(!preg_match('/^data:image\/png;base64,/', $png)) {
+        if (!preg_match('/^data:image\/png;base64,/', $png)) {
             http_status(400);
             return;
         }
-        $png = base64_decode(explode(',',$png)[1]);
+        $png = base64_decode(explode(',', $png)[1]);
 
-        if(substr($png, 1, 3) !== 'PNG') {
+        if (substr($png, 1, 3) !== 'PNG') {
             http_status(400);
             return;
         }
 
         $cacheName = getCacheName($svg, '.diagrams.png');
-        if(io_saveFile($cacheName, $png)) {
+        if (io_saveFile($cacheName, $png)) {
             echo 'OK';
         } else {
             http_status(500);
