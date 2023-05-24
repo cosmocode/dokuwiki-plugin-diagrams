@@ -118,8 +118,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $wrapperAttributes['title'] = $data['title'] ?: '';
             $wrapperAttributes['class'] = 'media diagrams-svg-wrapper media' . $data['align'];
             $wrapperAttributes['style'] = '';
-            if($data['width']) $wrapperAttributes['style'] .= 'width: ' . $data['width'] . 'px;';
-            if($data['height']) $wrapperAttributes['style'] .= 'height: ' . $data['height'] . 'px;';
+            if ($data['width']) $wrapperAttributes['style'] .= 'width: ' . $data['width'] . 'px;';
+            if ($data['height']) $wrapperAttributes['style'] .= 'height: ' . $data['height'] . 'px;';
 
             $imageAttributes = [];
             $imageAttributes['class'] = 'diagrams-svg';
