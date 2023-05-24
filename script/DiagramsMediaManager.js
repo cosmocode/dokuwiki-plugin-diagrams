@@ -45,20 +45,20 @@ class DiagramsMediaManager {
             // ensure media file is actually an editable diagram
             const response = await fetch(
                 DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_mediafile_editcheck&diagrams=' +
-                encodeURIComponent(JSON.stringify([svgLink.innerText])),
+                encodeURIComponent(JSON.stringify([svgLink.textContent])),
                 {
                     method: 'GET',
                     cache: 'no-cache',
                 }
             );
 
-            if (response.ok && (await response.json())[0] === svgLink.innerText) {
+            if (response.ok && (await response.json())[0] === svgLink.textContent) {
                 const editButton = document.createElement('button');
                 editButton.classList.add('diagrams-btn');
                 editButton.innerText = LANG.plugins.diagrams.editButton;
                 editButton.addEventListener('click', async () => {
                     const editor = new DiagramsEditor();
-                    await editor.editMediaFile(svgLink.innerText);
+                    await editor.editMediaFile(svgLink.textContent);
                 });
                 actionList.appendChild(editButton);
             }
@@ -127,9 +127,9 @@ class DiagramsMediaManager {
 
         let namespace = '';
         if (fullScreenNS) {
-            namespace = fullScreenNS.innerText;
+            namespace = fullScreenNS.textContent;
         } else if (popupNS) {
-            namespace = popupNS.innerText;
+            namespace = popupNS.textContent;
         } else {
             throw new Error('Could not find namespace'); //should not happen
         }
