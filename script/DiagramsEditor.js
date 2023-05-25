@@ -36,6 +36,9 @@ class DiagramsEditor {
     /** @type {string} the initial save data to load, set by one of the edit* methods */
     #svg = '';
 
+    /** @type {function} the bound message listener */
+    #listener = null;
+
     /**
      * Create a new diagrams editor
      *
@@ -191,7 +194,9 @@ class DiagramsEditor {
         this.#diagramsEditor.id = 'plugin__diagrams-editor';
         this.#diagramsEditor.src = JSINFO['plugins']['diagrams']['service_url'];
         document.body.appendChild(this.#diagramsEditor);
-        window.addEventListener('message', this.#handleMessage.bind(this));
+
+        this.#listener = this.#handleMessage.bind(this);
+        window.addEventListener('message', this.#listener);
     }
 
     /**
@@ -201,7 +206,7 @@ class DiagramsEditor {
         if (this.#diagramsEditor === null) return;
         this.#diagramsEditor.remove();
         this.#diagramsEditor = null;
-        window.removeEventListener('message', this.#handleMessage.bind(this));
+        window.removeEventListener('message', this.#listener);
     }
 
     /**
