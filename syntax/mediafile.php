@@ -119,9 +119,6 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $wrapperAttributes = [];
             $wrapperAttributes['title'] = $data['title'] ?: '';
             $wrapperAttributes['class'] = 'media diagrams-svg-wrapper media' . $data['align'];
-            $wrapperAttributes['style'] = '';
-            if ($data['width']) $wrapperAttributes['style'] .= 'width: ' . $data['width'] . 'px;';
-            if ($data['height']) $wrapperAttributes['style'] .= 'height: ' . $data['height'] . 'px;';
 
             $imageAttributes = [];
             $imageAttributes['class'] = 'diagrams-svg';
@@ -130,6 +127,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes['type'] = 'image/svg+xml';
             $imageAttributes['data-pos'] = $data['pos'] ?: '';
             $imageAttributes['data-len'] = $data['len'] ?: '';
+            $imageAttributes['width'] = $data['width'] ?: '';
+            $imageAttributes['height'] = $data['height'] ?:'';
 
             $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
             $wrapper = sprintf('<div %s>%s</div>', buildAttributes($wrapperAttributes, true), $image);
