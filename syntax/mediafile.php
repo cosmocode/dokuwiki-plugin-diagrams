@@ -100,9 +100,9 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
         if (is_a($renderer, 'renderer_plugin_dw2pdf')) {
             $imageAttributes = [
                 'class' => 'media',
-                'width' => $data['width'] ?: '',
-                'height' => $data['height'] ?: '',
-                'title' => $data['title'] ?: '',
+                'width' => empty($data['width']) ? '' : $data['width'],
+                'height' => empty($data['height']) ? '' : $data['height'],
+                'title' => $data['title'] ?? '',
                 'align' => $data['align'],
                 'src' => $data['url'],
             ];
@@ -125,10 +125,10 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes['data'] = $data['url'];
             $imageAttributes['data-id'] = cleanID($data['src']);
             $imageAttributes['type'] = 'image/svg+xml';
-            $imageAttributes['data-pos'] = $data['pos'] ?: '';
-            $imageAttributes['data-len'] = $data['len'] ?: '';
-            $imageAttributes['width'] = $data['width'] ?: '';
-            $imageAttributes['height'] = $data['height'] ?:'';
+            $imageAttributes['data-pos'] = $data['pos'] ?? '';
+            $imageAttributes['data-len'] = $data['len'] ?? '';
+            $imageAttributes['width'] = empty($data['width']) ? '' : $data['width'];
+            $imageAttributes['height'] = empty($data['height']) ? '' : $data['height'];
 
             $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
             $wrapper = sprintf('<div %s>%s</div>', buildAttributes($wrapperAttributes, true), $image);
