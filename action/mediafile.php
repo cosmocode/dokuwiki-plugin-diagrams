@@ -109,17 +109,14 @@ class action_plugin_diagrams_mediafile extends DokuWiki_Action_Plugin
     }
 
     /**
-     * Add CSP img-src directive to allow loading images from data source
+     * Set custom CSP for SVG diagrams
      *
      * @param Doku_Event $event MEDIA_SENDFILE
      */
     public function handleCSP(Doku_Event $event)
     {
         if ($event->data['ext'] === 'svg' && $this->helper->isDiagramFile($event->data['file'])) {
-            $event->data['csp']['img-src'] = "self data:";
-            $event->data['csp']['sandbox'] = "allow-popups allow-top-navigation allow-same-origin";
-            $event->data['csp']['style-src'] .= ' fonts.googleapis.com'; // Allow Google fonts
-            $event->data['csp']['font-src'] .= ' fonts.gstatic.com'; // Allow Google fonts
+            $event->data['csp'] = Diagrams::CSP;
         }
     }
 

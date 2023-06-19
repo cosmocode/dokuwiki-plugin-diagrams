@@ -1,4 +1,7 @@
 <?php
+
+use dokuwiki\plugin\diagrams\Diagrams;
+
 /**
  * DokuWiki Plugin diagrams (Renderer Component)
  *
@@ -34,17 +37,7 @@ class renderer_plugin_diagrams extends Doku_Renderer
      * @return string
      */
     protected function getCSP() {
-        $policy = [
-            'default-src' => "'none'",
-            'style-src' => "'unsafe-inline'",
-            'media-src' => "'self'",
-            'object-src' => "'self'",
-            'font-src' => "'self' data:",
-            'form-action' => "'none'",
-            'frame-ancestors' => "'self'",
-            'img-src' => "self data:",
-            'sandbox' => "allow-popups allow-top-navigation allow-same-origin",
-        ];
+        $policy = Diagrams::CSP;
 
         /** @noinspection DuplicatedCode from dokuwiki\HTTP\Headers::contentSecurityPolicy() */
         foreach ($policy as $key => $values) {
