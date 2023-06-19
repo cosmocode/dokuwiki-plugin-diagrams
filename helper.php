@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DokuWiki Plugin diagrams (Helper Component)
  *
@@ -9,11 +10,12 @@ class helper_plugin_diagrams extends \dokuwiki\Extension\Plugin
 {
     /**
      * Check if the given file is a diagrams.net diagram
-     * 
+     *
      * @param string $file
      * @return bool
      */
-    public function isDiagramFile($file) {
+    public function isDiagramFile($file)
+    {
         $svg = file_get_contents($file, false, null, 0, 500);
         return $this->isDiagram($svg);
     }
@@ -26,7 +28,8 @@ class helper_plugin_diagrams extends \dokuwiki\Extension\Plugin
      * @param string $svg The raw SVG data (first 500 bytes are enough)
      * @return bool
      */
-    public function isDiagram($svg) {
+    public function isDiagram($svg)
+    {
         $svg = substr($svg, 0, 500); // makes checking a tiny bit faster
         $svg = preg_replace('/^<!DOCTYPE.*?>/', '', $svg);
         $svg = ltrim($svg);

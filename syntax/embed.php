@@ -60,14 +60,22 @@ class syntax_plugin_diagrams_embed extends syntax_plugin_diagrams_mediafile
     public function render($format, Doku_Renderer $renderer, $data)
     {
         if (!$data) return false;
+        global $ID;
+        global $ACT;
         global $INPUT;
 
         switch ($format) {
             case 'xhtml':
-                // this references the diagram as data uri to prevent cross-origin access XSS
-                // we use this instead of the export_method below (which would also apply CSP headers)
-                // because this needs to work in preview, before the page has been saved
-                $data['url'] = 'data:image/svg+xml;base64,' . base64_encode($data['svg']);
+                if(act_clean($ACT) !== 'preview' && page_exists($ID)) {
+                    // this is "normal" rendering, we reference the diagram through the export
+                    // this applies the same CSP as mediafiles and will also show the exact behaviours
+                    $data['url'] = wl($ID, ['do' => 'export_diagrams', 'svg' => $this->count++], true, '&');
+                } else {
+                    // we're in preview and the diagram may not have been saved, yet. So we
+                    // reference it as data uri to prevent cross-origin access XSS
+                    $data['url'] = 'data:image/svg+xml;base64,' . base64_encode($data['svg']);
+                }
+
                 parent::render($format, $renderer, $data);
                 return true;
             case 'diagrams':
