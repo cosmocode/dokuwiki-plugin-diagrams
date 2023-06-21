@@ -117,13 +117,13 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $renderer->doc .= '<img ' . buildAttributes($imageAttributes) . '/>';
         } else {
             $wrapperAttributes = [];
-            $wrapperAttributes['title'] = $data['title'] ?: '';
+            $wrapperAttributes['title'] = $data['title'] ?? '';
             $wrapperAttributes['class'] = 'media diagrams-svg-wrapper media' . $data['align'];
 
             $imageAttributes = [];
             $imageAttributes['class'] = 'diagrams-svg';
             $imageAttributes['data'] = $data['url'];
-            $imageAttributes['data-id'] = cleanID($data['src']);
+            $imageAttributes['data-id'] = cleanID($data['src'] ?? '');
             $imageAttributes['type'] = 'image/svg+xml';
             $imageAttributes['data-pos'] = $data['pos'] ?? '';
             $imageAttributes['data-len'] = $data['len'] ?? '';
