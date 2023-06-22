@@ -24,11 +24,26 @@ class action_plugin_diagrams_mediafile extends DokuWiki_Action_Plugin
 
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleEditCheck');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleNamespaceCheck');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleExistsCheck');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleIsDiagramCheck');
         $controller->register_hook('MEDIA_SENDFILE', 'BEFORE', $this, 'handleCSP');
         $controller->register_hook('PLUGIN_MOVE_HANDLERS_REGISTER', 'BEFORE', $this, 'registerMoveHandler');
 
         $this->helper = plugin_load('helper', 'diagrams');
+    }
+
+    public function handleExistsCheck(Doku_Event $event)
+    {
+        if ($event->data !== 'plugin_diagrams_mediafile_existscheck') return;
+        $event->preventDefault();
+        $event->stopPropagation();
+
+        global $INPUT;
+        $mediaId = $INPUT->str('mediaId');
+
+        $file = mediaFN($mediaId);
+
+        echo json_encode(file_exists($file));
     }
 
     /**

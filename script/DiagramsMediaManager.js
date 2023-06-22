@@ -177,7 +177,7 @@ class DiagramsMediaManager {
      * @param {HTMLInputElement} input The input element containing the filename
      * @param {Event} event
      */
-    #createDiagram(namespace, input, event) {
+    async #createDiagram(namespace, input, event) {
         event.preventDefault();
         event.stopPropagation();
 
@@ -190,6 +190,11 @@ class DiagramsMediaManager {
         }
         const svg = namespace + ':' + id + '.svg';
 
+        if (await this.#checkOverwrite(svg)) {
+            alert('File exists already! Choose a different name!');
+            return;
+        }
+
         const editor = new DiagramsEditor(() => {
             let url = new URL(window.location.href);
             url.searchParams.set('ns', namespace);
@@ -200,6 +205,24 @@ class DiagramsMediaManager {
             window.location.href = url.toString();
         });
         editor.editMediaFile(svg);
+    }
+
+    /**
+     * Check with backend if a file with the given name already exists
+     *
+     * @param {string} svg
+     * @returns {Promise<boolean>}
+     */
+    async #checkOverwrite(svg) {
+        const url = DOKU_BASE + 'lib/exe/ajax.php' +
+            '?call=plugin_diagrams_mediafile_existscheck' +
+            '&mediaId=' + encodeURIComponent(svg);
+
+        const response = await fetch(url, {
+            cache: 'no-cache',
+        });
+
+        return response.json();
     }
 }
 
