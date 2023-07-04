@@ -14,9 +14,4 @@ if (JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 2)) {
 }
 
 // open links in diagrams in the browser window instead of SVG frame
-jQuery(window).on('load', function () {
-    jQuery('object.diagrams-svg').each(function () {
-        jQuery(this.contentDocument).find('svg a').not('[target]').attr('target', '_top');
-    });
-});
-
+/* DOKUWIKI:include script/mediafile-linkfix.js */
