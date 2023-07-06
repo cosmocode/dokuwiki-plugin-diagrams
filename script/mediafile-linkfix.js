@@ -23,8 +23,7 @@ window.addEventListener('load', function () {
             nodes.forEach(node => {
                 jQuery(node).find('object.diagrams-svg').each(function () {
                     // SVG clicks do not bubble up, so we use an available event
-                    // FIXME this will not work on mobile devices
-                    jQuery(this).on('mouseover', manipulateLinkTarget);
+                    jQuery(this).on('load', manipulateLinkTarget);
                 });
             });
         }
