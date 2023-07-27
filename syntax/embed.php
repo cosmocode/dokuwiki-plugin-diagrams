@@ -63,13 +63,14 @@ class syntax_plugin_diagrams_embed extends syntax_plugin_diagrams_mediafile
         global $ID;
         global $ACT;
         global $INPUT;
+        global $REV;
 
         switch ($format) {
             case 'xhtml':
-                if(act_clean($ACT) !== 'preview' && page_exists($ID)) {
+                if (act_clean($ACT) !== 'preview' && page_exists($ID)) {
                     // this is "normal" rendering, we reference the diagram through the export
-                    // this applies the same CSP as mediafiles and will also show the exact behaviours
-                    $data['url'] = wl($ID, ['do' => 'export_diagrams', 'svg' => $this->count++], true, '&');
+                    // this applies the same CSP as media files and will also show the exact behaviours
+                    $data['url'] = wl($ID, ['do' => 'export_diagrams', 'svg' => $this->count++, 'rev' => $REV], true, '&');
                 } else {
                     // we're in preview and the diagram may not have been saved, yet. So we
                     // reference it as data uri to prevent cross-origin access XSS
