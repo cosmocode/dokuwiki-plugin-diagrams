@@ -8,7 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('object.diagrams-svg[data-pos]').forEach(embed => {
         const button = document.createElement('button');
         button.className = 'diagrams-btn';
-        button.innerText = LANG.plugins.diagrams.editButton;
+        button.innerText = LANG.plugins.diagrams.editButtonShort;
+        button.title = LANG.plugins.diagrams.editButton;
+
+        const icon = DiagramsFunctions.getButtonIcon('edit');
+        button.prepend(icon);
+
         button.addEventListener('click', event => {
             event.preventDefault();
             const diagramsEditor = new DiagramsEditor(() => {
@@ -21,6 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         });
 
-        embed.parentNode.appendChild(button);
+        embed.parentNode.querySelector('.diagrams-buttons').appendChild(button);
     });
 });

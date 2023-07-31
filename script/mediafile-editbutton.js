@@ -22,8 +22,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (editableDiagrams.includes(image.getAttribute('data-id'))) {
             const button = document.createElement('button');
             button.className = 'diagrams-btn';
-            button.innerText = LANG.plugins.diagrams.editButton;
+            button.innerText = LANG.plugins.diagrams.editButtonShort;
             button.title = LANG.plugins.diagrams.editButton;
+
+            const icon = DiagramsFunctions.getButtonIcon('edit');
+            button.prepend(icon);
+
             button.addEventListener('click', event => {
                 event.preventDefault();
                 const diagramsEditor = new DiagramsEditor(() => {
@@ -31,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 });
                 diagramsEditor.editMediaFile(image.getAttribute('data-id'));
             });
-            image.parentNode.appendChild(button);
+            image.parentNode.querySelector('.diagrams-buttons').appendChild(button);
         }
     });
 });

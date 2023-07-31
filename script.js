@@ -1,3 +1,4 @@
+/* DOKUWIKI:include script/DiagramsFunctions.js */
 /* DOKUWIKI:include script/DiagramsEditor.js */
 /* DOKUWIKI:include script/prosemirror.js */
 
@@ -12,6 +13,8 @@ if (JSINFO.plugins.diagrams && (JSINFO.plugins.diagrams.mode & 2)) {
     /* DOKUWIKI:include script/embed-toolbar.js */
     /* DOKUWIKI:include script/embed-editbutton.js */
 }
+
+/* DOKUWIKI:include script/download.js */
 
 // open links in diagrams in the browser window instead of SVG frame
 /* DOKUWIKI:include script/mediafile-linkfix.js */

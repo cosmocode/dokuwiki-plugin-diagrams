@@ -131,7 +131,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes['height'] = empty($data['height']) ? '' : $data['height'];
 
             $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
-            $wrapper = sprintf('<div %s>%s</div>', buildAttributes($wrapperAttributes, true), $image);
+            $actionButtons = '<div class="diagrams-buttons"></div>';
+            $wrapper = sprintf('<div %s>%s%s</div>', buildAttributes($wrapperAttributes, true), $image, $actionButtons);
             $renderer->doc .= $wrapper;
         }
 
