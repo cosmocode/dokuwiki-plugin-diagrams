@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', event => {
             event.preventDefault();
             const diagramsEditor = new DiagramsEditor(() => {
-                window.location.reload();
+                // replace instead of reload to avoid accidentally re-submitting forms
+                window.location.replace(window.location.href);
             });
             diagramsEditor.editEmbed(
                 JSINFO.id,
