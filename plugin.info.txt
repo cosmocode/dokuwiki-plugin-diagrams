@@ -1,7 +1,7 @@
 base diagrams
 author Innovakom + CosmoCode
 email dokuwiki@cosmocode.de
-date 2023-07-27
+date 2023-07-31
 name Diagrams plugin
 desc Embed diagrams.net editor (formerly draw.io)
 url https://www.dokuwiki.org/plugin:diagrams
