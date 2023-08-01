@@ -97,6 +97,9 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             return false;
         }
 
+        // check for cached PNG
+        $cachefile = $this->getCachedPNG($data);
+
         if (is_a($renderer, 'renderer_plugin_dw2pdf')) {
             $imageAttributes = [
                 'class' => 'media',
@@ -108,10 +111,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             ];
 
             // if a PNG cache exists, use it instead of the real URL
-            if ($this->getConf('pngcache')) {
-                if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
-                $cachefile = getCacheName($data['svg'], '.diagrams.png');
-                if (file_exists($cachefile)) $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
+            if ($cachefile) {
+                $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
             }
 
             $renderer->doc .= '<img ' . buildAttributes($imageAttributes) . '/>';
@@ -130,6 +131,9 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes['width'] = empty($data['width']) ? '' : $data['width'];
             $imageAttributes['height'] = empty($data['height']) ? '' : $data['height'];
 
+            if ($cachefile) {
+                $imageAttributes['data-cached'] = str_replace(DOKU_INC, DOKU_URL, $cachefile);
+            }
             $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
             $actionButtons = '<div class="diagrams-buttons"></div>';
             $wrapper = sprintf('<div %s>%s%s</div>', buildAttributes($wrapperAttributes, true), $image, $actionButtons);
@@ -137,5 +141,22 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
         }
 
         return true;
+    }
+
+    /**
+     * PNG cache file, if caching is enabled and file exists
+     *
+     * @param array $data
+     * @return string
+     */
+    protected function getCachedPNG($data)
+    {
+        if (!$this->getConf('pngcache')) return '';
+
+        if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
+        $cachefile = getCacheName($data['svg'], '.diagrams.png');
+        if (file_exists($cachefile)) return $cachefile;
+
+        return '';
     }
 }
