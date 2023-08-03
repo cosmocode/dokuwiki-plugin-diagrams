@@ -89,6 +89,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
      */
     public function render($format, Doku_Renderer $renderer, $data)
     {
+        global $conf;
+
         if ($format === 'metadata') {
             $renderer->internalmedia($data['src']);
             return true;
@@ -131,10 +133,14 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes['width'] = empty($data['width']) ? '' : $data['width'];
             $imageAttributes['height'] = empty($data['height']) ? '' : $data['height'];
 
+            // TODO check REV: only current diagram is cached
             if ($cachefile) {
-                $imageAttributes['data-cached'] = str_replace(DOKU_INC, DOKU_URL, $cachefile);
+                // strip cache dir info from data attribute
+                $imageAttributes['data-pngcache'] = str_replace($conf['cachedir'], '', $cachefile);
             }
+
             $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
+            // wrapper for action buttons
             $actionButtons = '<div class="diagrams-buttons"></div>';
             $wrapper = sprintf('<div %s>%s%s</div>', buildAttributes($wrapperAttributes, true), $image, $actionButtons);
             $renderer->doc .= $wrapper;

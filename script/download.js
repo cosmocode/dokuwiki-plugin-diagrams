@@ -4,19 +4,20 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('div.diagrams-buttons').forEach(diagramActions => {
-        $diagram = jQuery(diagramActions.parentNode.querySelector('object.diagrams-svg'));
+        const $diagram = jQuery(diagramActions.parentNode.querySelector('object.diagrams-svg'));
         const url = $diagram.attr('data');
-        const cacheurl = $diagram.data('cached');
+        const pngcache = $diagram.data('pngcache');
 
+        // media files have an id, embedded diagrams don't
         let fileName = 'diagram';
         if (typeof $diagram.data('id') !== "undefined") {
             fileName = $diagram.data('id').split(':').pop();
         }
 
         // download
-        diagramActions.prepend(DiagramsFunctions.getDownloadButton('SVG', url, fileName));
-        if (cacheurl) {
-            diagramActions.prepend(DiagramsFunctions.getDownloadButton('PNG', cacheurl, fileName));
+        diagramActions.prepend(DiagramsFunctions.getDownloadButton('svg', url, fileName));
+        if (pngcache) {
+            diagramActions.prepend(DiagramsFunctions.getDownloadButton('png', pngcache, fileName));
         }
 
         // open

@@ -20,6 +20,7 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
         $controller->register_hook('MEDIAMANAGER_STARTED', 'AFTER', $this, 'addJsinfo');
         $controller->register_hook('DOKUWIKI_STARTED', 'AFTER', $this, 'checkConf');
         $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handleCache');
+        $controller->register_hook('AJAX_CALL_UNKNOWN', 'BEFORE', $this, 'handlePNGDownload');
 
         $this->helper = plugin_load('helper', 'diagrams');
     }
@@ -106,5 +107,34 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
         } else {
             http_status(500);
         }
+    }
+
+    /**
+     * PNG download available via link created in JS (only if PNG caching is enabled)
+     *
+     * @param Doku_Event $event
+     * @return void
+     */
+    public function handlePNGDownload(Doku_Event $event)
+    {
+        if ($event->data !== 'plugin_diagrams_pngdownload') return;
+        $event->preventDefault();
+        $event->stopPropagation();
+
+        global $INPUT;
+        global $conf;
+
+        $cacheName = $INPUT->str('pngcache');
+        $downloadName = $INPUT->str('filename');
+
+        // serve cached PNG file
+        $file = $conf['cachedir'] . $cacheName;
+        if (file_exists($file)) {
+            header('Content-Type: image/png');
+            header("Content-Disposition: attachment; filename=$downloadName;");
+            http_sendfile($file);
+            readfile($file);
+        }
+        exit();
     }
 }

@@ -4,22 +4,30 @@
 class DiagramsFunctions {
 
     static getDownloadButton(ext, url, fileName) {
-        const link = document.createElement('a');
-        link.href = url;
+
         const button = document.createElement('button');
         button.className = 'diagrams-btn';
-        if (ext === 'PNG') {
-            link.setAttribute('download', fileName + '.png');
-            button.innerText = LANG.plugins.diagrams.downloadPNGButtonShort;
-            button.title = LANG.plugins.diagrams.downloadPNGButton;
-        } else {
-            link.setAttribute('download', fileName);
-            button.innerText = LANG.plugins.diagrams.downloadSVGButtonShort;
-            button.title = LANG.plugins.diagrams.downloadSVGButton;
-        }
 
         const icon = DiagramsFunctions.getButtonIcon('download');
         button.prepend(icon);
+
+        const link = document.createElement('a');
+
+        if (ext === 'png') {
+            button.append(LANG.plugins.diagrams.downloadPNGButtonShort);
+            button.title = LANG.plugins.diagrams.downloadPNGButton;
+
+            link.href = DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_pngdownload' +
+                '&pngcache=' + encodeURIComponent(url) +
+                '&filename=' + encodeURIComponent(fileName + '.' + ext);
+            link.setAttribute('download', fileName + '.' + ext);
+        } else {
+            link.href = url;
+            link.setAttribute('download', fileName);
+            button.append(LANG.plugins.diagrams.downloadSVGButtonShort);
+            button.title = LANG.plugins.diagrams.downloadSVGButton;
+        }
+
         link.appendChild(button);
 
         return link;
