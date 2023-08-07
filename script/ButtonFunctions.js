@@ -7,11 +7,11 @@ class ButtonFunctions {
      * HTML of a download button
      *
      * @param {string} ext
-     * @param {string} url
-     * @param {string} fileName
+     * @param {string} identifier
+     * @param {string} media
      * @returns {HTMLAnchorElement}
      */
-    static getDownloadButton(ext, url, fileName) {
+    static getDownloadButton(ext, identifier, media = '') {
 
         const button = document.createElement('button');
         button.className = 'diagrams-btn';
@@ -25,13 +25,26 @@ class ButtonFunctions {
             button.append(LANG.plugins.diagrams.downloadPNGButtonShort);
             button.title = LANG.plugins.diagrams.downloadPNGButton;
 
-            link.href = DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_pngdownload' +
-                '&pngcache=' + encodeURIComponent(url) +
-                '&filename=' + encodeURIComponent(fileName + '.' + ext);
-            link.setAttribute('download', fileName + '.' + ext);
+            let href = DOKU_BASE + 'lib/exe/ajax.php?call=plugin_diagrams_pngdownload' +
+            '&pngcache=' + encodeURIComponent(identifier);
+
+            let param;
+            if (media.length) {
+                param = '&media=' + encodeURIComponent(media);
+            } else {
+                param = '&id=' + JSINFO.id;
+            }
+            link.href = href + param;
         } else {
-            link.href = url;
-            link.setAttribute('download', fileName);
+            link.href = identifier;
+
+            let downloadName;
+            if (media.length) {
+                downloadName = media;
+            } else {
+                downloadName = JSINFO.id + `.${ext}`;
+            }
+            link.setAttribute('download', downloadName);
             button.append(LANG.plugins.diagrams.downloadSVGButtonShort);
             button.title = LANG.plugins.diagrams.downloadSVGButton;
         }
@@ -66,7 +79,7 @@ class ButtonFunctions {
     /**
      * Icon HTML
      *
-     * @param {String} button
+     * @param {string} button
      * @returns {HTMLSpanElement}
      */
     static getButtonIcon(button) {

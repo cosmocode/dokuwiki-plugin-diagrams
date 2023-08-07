@@ -134,8 +134,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes['height'] = empty($data['height']) ? '' : $data['height'];
 
             if ($cachefile) {
-                // strip cache dir info from data attribute
-                $imageAttributes['data-pngcache'] = str_replace($conf['cachedir'], '', $cachefile);
+                // strip cache dir and our cache extension from data attribute
+                $imageAttributes['data-pngcache'] = str_replace([$conf['cachedir'], Diagrams::CACHE_EXT], '', $cachefile);
             }
 
             $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
@@ -149,7 +149,7 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
     }
 
     /**
-     * PNG cache file, if caching is enabled and file exists.
+     * PNG cache file without extension, if caching is enabled and file exists.
      * Returns an empty string on older revisions (checking $REV), because
      * PNG caching does not support versioning.
      *
@@ -163,7 +163,7 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
         if (!$this->getConf('pngcache') || $REV) return '';
 
         if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
-        $cachefile = getCacheName($data['svg'], '.diagrams.png');
+        $cachefile = getCacheName($data['svg'], Diagrams::CACHE_EXT);
         if (file_exists($cachefile)) return $cachefile;
 
         return '';

@@ -9,20 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const pngcache = $diagram.data('pngcache');
 
         // media files have an id, embedded diagrams don't
-        let fileName = 'diagram';
+        let media = '';
         if (typeof $diagram.data('id') !== "undefined") {
-            fileName = $diagram.data('id').split(':').pop();
+            media = $diagram.data('id');
         }
 
         // download
-        diagramActions.prepend(ButtonFunctions.getDownloadButton('svg', url, fileName));
+        diagramActions.prepend(ButtonFunctions.getDownloadButton('svg', url, media));
         if (pngcache) {
-            diagramActions.prepend(ButtonFunctions.getDownloadButton('png', pngcache, fileName));
+            diagramActions.prepend(ButtonFunctions.getDownloadButton('png', pngcache, media));
         }
 
         // open
         diagramActions.prepend(ButtonFunctions.getOpenButton(url));
     });
 });
-
-

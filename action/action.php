@@ -125,13 +125,34 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
         global $conf;
 
         $cacheName = $INPUT->str('pngcache');
-        $downloadName = $INPUT->str('filename');
+        $media = cleanID($INPUT->str('media'));
+        $id = cleanID($INPUT->str('id'));
+
+        // check ACLs to original file or page
+        if (
+            ($id && auth_quickaclcheck($id) < AUTH_READ) ||
+            ($media && auth_quickaclcheck($media) < AUTH_READ)
+        ) {
+            http_status(403);
+            return;
+        }
+
+        // check if download target exists
+        if (
+            ($id && !page_exists($id)) ||
+            ($media && !media_exists($media))
+        ) {
+            http_status(404);
+            return;
+        }
 
         // serve cached PNG file
-        $file = $conf['cachedir'] . $cacheName;
+        $file = $conf['cachedir'] . $cacheName . \dokuwiki\plugin\diagrams\Diagrams::CACHE_EXT;
         if (file_exists($file)) {
+            // correct file extension
+            $download = $media ? str_replace('.svg', '.png', $media) : $id . ".png";
             header('Content-Type: image/png');
-            header("Content-Disposition: attachment; filename=$downloadName;");
+            header("Content-Disposition: attachment; filename=$download;");
             http_sendfile($file);
             readfile($file);
         }

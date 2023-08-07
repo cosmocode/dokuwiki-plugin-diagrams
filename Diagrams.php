@@ -5,7 +5,8 @@ namespace dokuwiki\plugin\diagrams;
 /**
  * Currently only used to hold constants
  */
-class Diagrams {
+class Diagrams
+{
     const MODE_MEDIA = 1;
     const MODE_EMBED = 2;
 
@@ -20,4 +21,6 @@ class Diagrams {
         'img-src' => "self data:",
         'sandbox' => "allow-popups allow-top-navigation allow-same-origin",
     ];
+
+    const CACHE_EXT = '.diagrams.png';
 }
