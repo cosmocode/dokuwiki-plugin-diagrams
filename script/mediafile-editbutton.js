@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             button.innerText = LANG.plugins.diagrams.editButtonShort;
             button.title = LANG.plugins.diagrams.editButton;
 
-            const icon = DiagramsFunctions.getButtonIcon('edit');
+            const icon = ButtonFunctions.getButtonIcon('edit');
             button.prepend(icon);
 
             button.addEventListener('click', event => {

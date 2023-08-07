@@ -15,13 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // download
-        diagramActions.prepend(DiagramsFunctions.getDownloadButton('svg', url, fileName));
+        diagramActions.prepend(ButtonFunctions.getDownloadButton('svg', url, fileName));
         if (pngcache) {
-            diagramActions.prepend(DiagramsFunctions.getDownloadButton('png', pngcache, fileName));
+            diagramActions.prepend(ButtonFunctions.getDownloadButton('png', pngcache, fileName));
         }
 
         // open
-        diagramActions.prepend(DiagramsFunctions.getOpenButton(url));
+        diagramActions.prepend(ButtonFunctions.getOpenButton(url));
     });
 });
 

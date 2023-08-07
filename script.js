@@ -1,4 +1,4 @@
-/* DOKUWIKI:include script/DiagramsFunctions.js */
+/* DOKUWIKI:include script/ButtonFunctions.js */
 /* DOKUWIKI:include script/DiagramsEditor.js */
 /* DOKUWIKI:include script/prosemirror.js */
 

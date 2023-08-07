@@ -1,14 +1,22 @@
 /**
- * Common functions for Diagrams scripts
+ * Button functions
  */
-class DiagramsFunctions {
+class ButtonFunctions {
 
+    /**
+     * HTML of a download button
+     *
+     * @param {string} ext
+     * @param {string} url
+     * @param {string} fileName
+     * @returns {HTMLAnchorElement}
+     */
     static getDownloadButton(ext, url, fileName) {
 
         const button = document.createElement('button');
         button.className = 'diagrams-btn';
 
-        const icon = DiagramsFunctions.getButtonIcon('download');
+        const icon = ButtonFunctions.getButtonIcon('download');
         button.prepend(icon);
 
         const link = document.createElement('a');
@@ -33,13 +41,19 @@ class DiagramsFunctions {
         return link;
     }
 
+    /**
+     * HTML of an open button
+     *
+     * @param {string} url
+     * @returns {HTMLButtonElement}
+     */
     static getOpenButton(url) {
         const button = document.createElement('button');
         button.className = 'diagrams-btn';
         button.innerText = LANG.plugins.diagrams.openButtonShort;
         button.title = LANG.plugins.diagrams.openButton;
 
-        button.prepend(DiagramsFunctions.getButtonIcon('open'));
+        button.prepend(ButtonFunctions.getButtonIcon('open'));
 
         button.addEventListener('click', event => {
             event.preventDefault();
