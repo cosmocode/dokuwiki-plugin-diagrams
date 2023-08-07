@@ -133,7 +133,6 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes['width'] = empty($data['width']) ? '' : $data['width'];
             $imageAttributes['height'] = empty($data['height']) ? '' : $data['height'];
 
-            // TODO check REV: only current diagram is cached
             if ($cachefile) {
                 // strip cache dir info from data attribute
                 $imageAttributes['data-pngcache'] = str_replace($conf['cachedir'], '', $cachefile);
@@ -150,14 +149,18 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
     }
 
     /**
-     * PNG cache file, if caching is enabled and file exists
+     * PNG cache file, if caching is enabled and file exists.
+     * Returns an empty string on older revisions (checking $REV), because
+     * PNG caching does not support versioning.
      *
      * @param array $data
      * @return string
      */
     protected function getCachedPNG($data)
     {
-        if (!$this->getConf('pngcache')) return '';
+        global $REV;
+
+        if (!$this->getConf('pngcache') || $REV) return '';
 
         if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
         $cachefile = getCacheName($data['svg'], '.diagrams.png');
