@@ -89,6 +89,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
      */
     public function render($format, Doku_Renderer $renderer, $data)
     {
+        global $conf;
+
         if ($format === 'metadata') {
             $renderer->internalmedia($data['src']);
             return true;
@@ -96,6 +98,9 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
         if ($format !== 'xhtml') {
             return false;
         }
+
+        // check for cached PNG
+        $cachefile = $this->getCachedPNG($data);
 
         if (is_a($renderer, 'renderer_plugin_dw2pdf')) {
             $imageAttributes = [
@@ -108,10 +113,8 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             ];
 
             // if a PNG cache exists, use it instead of the real URL
-            if ($this->getConf('pngcache')) {
-                if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
-                $cachefile = getCacheName($data['svg'], '.diagrams.png');
-                if (file_exists($cachefile)) $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
+            if ($cachefile) {
+                $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
             }
 
             $renderer->doc .= '<img ' . buildAttributes($imageAttributes) . '/>';
@@ -130,11 +133,39 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $imageAttributes['width'] = empty($data['width']) ? '' : $data['width'];
             $imageAttributes['height'] = empty($data['height']) ? '' : $data['height'];
 
+            if ($cachefile) {
+                // strip cache dir and our cache extension from data attribute
+                $imageAttributes['data-pngcache'] = str_replace([$conf['cachedir'], Diagrams::CACHE_EXT], '', $cachefile);
+            }
+
             $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
-            $wrapper = sprintf('<div %s>%s</div>', buildAttributes($wrapperAttributes, true), $image);
+            // wrapper for action buttons
+            $actionButtons = '<div class="diagrams-buttons"></div>';
+            $wrapper = sprintf('<div %s>%s%s</div>', buildAttributes($wrapperAttributes, true), $image, $actionButtons);
             $renderer->doc .= $wrapper;
         }
 
         return true;
+    }
+
+    /**
+     * PNG cache file without extension, if caching is enabled and file exists.
+     * Returns an empty string on older revisions (checking $REV), because
+     * PNG caching does not support versioning.
+     *
+     * @param array $data
+     * @return string
+     */
+    protected function getCachedPNG($data)
+    {
+        global $REV;
+
+        if (!$this->getConf('pngcache') || $REV) return '';
+
+        if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
+        $cachefile = getCacheName($data['svg'], Diagrams::CACHE_EXT);
+        if (file_exists($cachefile)) return $cachefile;
+
+        return '';
     }
 }
