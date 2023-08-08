@@ -42,7 +42,7 @@ class ButtonFunctions {
             if (media.length) {
                 downloadName = media;
             } else {
-                downloadName = JSINFO.id + `.${ext}`;
+                downloadName = JSINFO.id.split(':').pop() + `.${ext}`;
             }
             link.setAttribute('download', downloadName);
             button.append(LANG.plugins.diagrams.downloadSVGButtonShort);

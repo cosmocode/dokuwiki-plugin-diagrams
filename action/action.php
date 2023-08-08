@@ -151,11 +151,13 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
         if (file_exists($file)) {
             // correct file extension
             $download = $media ? str_replace('.svg', '.png', $media) : $id . ".png";
+            $download = noNS($download);
             header('Content-Type: image/png');
             header("Content-Disposition: attachment; filename=$download;");
             http_sendfile($file);
             readfile($file);
+        } else {
+            http_status(404);
         }
-        exit();
     }
 }
