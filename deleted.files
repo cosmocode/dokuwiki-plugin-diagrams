@@ -11,3 +11,4 @@ script/mediamanager.js
 script/service.js
 syntax.php
 syntax/inline.php
+styles.less

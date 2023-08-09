@@ -16,8 +16,8 @@ a.plugin_diagrams_create {
 // in-page display
 .diagrams-svg-wrapper {
   overflow: auto;
-  display: inline-block; // overwritten by base media-align classes
   width: fit-content;
+  height: fit-content;
 
   // these match the standard dokuwiki template's img alignment
   &.media {
@@ -26,14 +26,22 @@ a.plugin_diagrams_create {
 
   &.medialeft {
     margin: .2em 1em .2em 0;
+    display: inline-block;
   }
 
   &.mediaright {
     margin: .2em 0 .2em 1em;
+    display: inline-block;
   }
 
   &.mediacenter {
     margin: .2em auto;
+    display: block;
+  }
+
+  object {
+    // fix for sometimes missing edges
+    max-width: 99%;
   }
 }
 
@@ -57,6 +65,10 @@ a.plugin_diagrams_create {
 
 // buttons
 .diagrams-svg-wrapper .diagrams-buttons .diagrams-btn {
+    @media print {
+      display: none;
+    }
+
     font-size: 0.75em;
 
     svg {
