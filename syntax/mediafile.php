@@ -108,6 +108,7 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
                 'width' => empty($data['width']) ? '' : $data['width'],
                 'height' => empty($data['height']) ? '' : $data['height'],
                 'title' => $data['title'] ?? '',
+                'alt' => $data['title'] ?? '',
                 'align' => $data['align'],
                 'src' => $data['url'],
             ];
@@ -138,7 +139,7 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
                 $imageAttributes['data-pngcache'] = str_replace([$conf['cachedir'], Diagrams::CACHE_EXT], '', $cachefile);
             }
 
-            $image = sprintf('<object %s></object>', buildAttributes($imageAttributes, true));
+            $image = sprintf('<object %s><span class="diagrams-alt">' . $wrapperAttributes['title'] . '</span></object>', buildAttributes($imageAttributes, true));
             // wrapper for action buttons
             $actionButtons = '<div class="diagrams-buttons"></div>';
             $wrapper = sprintf('<div %s>%s%s</div>', buildAttributes($wrapperAttributes, true), $image, $actionButtons);
