@@ -46,11 +46,12 @@ class syntax_plugin_diagrams_embed extends syntax_plugin_diagrams_mediafile
             'len' => $svglen,
         ];
 
-        if (preg_match('/\b(left|right|center)\b/', $params, $matches)) {
-            $data['align'] = $matches[1];
-        }
         if (preg_match('/\|(.*)/', $params, $matches)) {
             $data['title'] = $matches[1];
+            $params = str_replace($matches[0], '', $params);
+        }
+        if (preg_match('/\b(left|right|center)\b/', $params, $matches)) {
+            $data['align'] = $matches[1];
         }
         if (preg_match('/\b(\d+)x(\d+)\b/', $params, $matches)) {
             $data['width'] = (int)$matches[1];

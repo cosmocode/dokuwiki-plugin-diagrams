@@ -139,7 +139,7 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
                 $imageAttributes['data-pngcache'] = str_replace([$conf['cachedir'], Diagrams::CACHE_EXT], '', $cachefile);
             }
 
-            $image = sprintf('<object %s><span class="diagrams-alt">' . $wrapperAttributes['title'] . '</span></object>', buildAttributes($imageAttributes, true));
+            $image = sprintf('<object %s><span class="diagrams-alt">' . hsc($wrapperAttributes['title']) . '</span></object>', buildAttributes($imageAttributes, true));
             // wrapper for action buttons
             $actionButtons = '<div class="diagrams-buttons"></div>';
             $wrapper = sprintf('<div %s>%s%s</div>', buildAttributes($wrapperAttributes, true), $image, $actionButtons);
