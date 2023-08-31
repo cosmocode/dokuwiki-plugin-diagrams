@@ -35,6 +35,12 @@ class DiagramsNode extends Node
         if (!empty($this->data['attrs']['align'])) {
             $openingTag .= ' ' . $this->data['attrs']['align'];
         }
+        if (!empty($this->data['attrs']['width']) && !empty($this->data['attrs']['height'])) {
+            $openingTag .= ' ' . $this->data['attrs']['width'] . 'x' . $this->data['attrs']['height'];
+        }
+        if (!empty($this->data['attrs']['title'])) {
+            $openingTag .= ' |' . $this->data['attrs']['title'];
+        }
         $openingTag .= '>';
 
         $svg = $this->data['attrs']['url'];
