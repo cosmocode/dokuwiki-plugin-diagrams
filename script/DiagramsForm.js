@@ -176,7 +176,8 @@ class DiagramsForm extends KeyValueForm {
      * Save an embedded diagram back to the editor
      */
     onSaveEmbed(svg) {
-        this.#attributes.url = 'data:image/svg+xml;base64,' + btoa(svg);
+        const encSvg = this.bytesToBase64(new TextEncoder().encode(svg));
+        this.#attributes.url = 'data:image/svg+xml;base64,' + encSvg;
         this.updateFormState();
         return true;
     }
@@ -206,5 +207,17 @@ class DiagramsForm extends KeyValueForm {
 
         this.#attributes.id = mediaid;
         this.updateFormState();
+    }
+
+    /**
+     * UTF-8 safe Base64 encoder
+     *
+     * @see https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
+     * @param bytes
+     * @returns {string}
+     */
+    bytesToBase64(bytes) {
+        const binString = String.fromCodePoint(...bytes);
+        return btoa(binString);
     }
 }
