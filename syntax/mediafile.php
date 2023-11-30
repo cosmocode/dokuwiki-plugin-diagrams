@@ -163,7 +163,9 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
 
         if (!$this->getConf('pngcache') || $REV) return '';
 
-        if (!$data['svg']) $data['svg'] = file_get_contents(mediaFN($data['src']));
+        if (empty($data['svg'])) {
+            $data['svg'] = file_get_contents(mediaFN($data['src']));
+        }
         $cachefile = getCacheName($data['svg'], Diagrams::CACHE_EXT);
         if (file_exists($cachefile)) return $cachefile;
 
