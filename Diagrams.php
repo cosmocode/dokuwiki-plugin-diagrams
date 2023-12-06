@@ -19,7 +19,7 @@ class Diagrams
         'form-action' => "'none'",
         'frame-ancestors' => "'self'",
         'img-src' => "self data:",
-        'sandbox' => "allow-popups allow-top-navigation allow-same-origin",
+        'sandbox' => "allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-same-origin",
     ];
 
     const CACHE_EXT = '.diagrams.png';
