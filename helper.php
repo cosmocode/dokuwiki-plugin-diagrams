@@ -31,7 +31,9 @@ class helper_plugin_diagrams extends \dokuwiki\Extension\Plugin
     public function isDiagram($svg)
     {
         $svg = substr($svg, 0, 500); // makes checking a tiny bit faster
-        $svg = preg_replace('/^<!DOCTYPE.*?>/', '', $svg);
+        $svg = preg_replace('/<\?xml.*?>/', '', $svg);
+        $svg = preg_replace('/<!--.*?-->/', '', $svg);
+        $svg = preg_replace('/<!DOCTYPE.*?>/', '', $svg);
         $svg = ltrim($svg);
 
         if (empty($svg) || substr($svg, 0, 4) !== '<svg') return false;
