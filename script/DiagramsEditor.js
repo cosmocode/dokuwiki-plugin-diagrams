@@ -192,7 +192,7 @@ class DiagramsEditor {
     #createEditor() {
         this.#diagramsEditor = document.createElement('iframe');
         this.#diagramsEditor.id = 'plugin__diagrams-editor';
-        this.#diagramsEditor.src = JSINFO['plugins']['diagrams']['service_url'];
+        this.#diagramsEditor.src = JSINFO['plugins']['diagrams']['service_url'] + '&ui=' + JSINFO['plugins']['diagrams']['theme'];
         document.body.appendChild(this.#diagramsEditor);
 
         this.#listener = this.#handleMessage.bind(this);
