@@ -41,7 +41,11 @@ a.plugin_diagrams_create {
 
   object {
     // fix for sometimes missing edges
-    max-width: 99%;
+    max-width: 99%; 
+
+    &.dark {
+      filter: invert(93%) hue-rotate(180deg);
+    }
   }
 }
 

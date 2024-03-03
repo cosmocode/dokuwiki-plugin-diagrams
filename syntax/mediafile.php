@@ -125,7 +125,7 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             $wrapperAttributes['class'] = 'media diagrams-svg-wrapper media' . $data['align'];
 
             $imageAttributes = [];
-            $imageAttributes['class'] = 'diagrams-svg';
+            $imageAttributes['class'] = "diagrams-svg " . $this->getConf('theme');
             $imageAttributes['data'] = $data['url'];
             $imageAttributes['data-id'] = cleanID($data['src'] ?? '');
             $imageAttributes['type'] = 'image/svg+xml';
