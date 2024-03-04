@@ -113,7 +113,7 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         }
 
         if ($this->getConf('theme') === 'dark') {
-            $svg = Diagrams::addDarkModeStyle($svg);
+            $svg = $this->helper->addDarkModeStyle($svg);
         }
 
         $original = rawWiki($id);
