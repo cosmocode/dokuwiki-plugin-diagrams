@@ -112,6 +112,10 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
             return;
         }
 
+        if ($this->getConf('theme') === 'dark') {
+            $svg = $this->addDarkModeStyle($svg);
+        }
+
         $original = rawWiki($id);
         $new = substr($original, 0, $pos) . $svg . substr($original, $pos + $len);
         saveWikiText($id, $new, $this->getLang('embedSaveSummary'));
@@ -119,5 +123,24 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         echo 'OK';
     }
 
+    /**
+     * Adds style node to render svg in dark theme.
+     *
+     * @param string $svg
+     */
+    private function addDarkModeStyle(string $svg)
+    {
+        $svgAsXML = simplexml_load_string($svg);
+        $svgAsXML->addAttribute('class', 'ge-export-svg-dark');
+
+        $defs = $svgAsXML->defs;
+
+        $style = $defs->addChild('style');
+        $style->addAttribute('type', 'text/css');
+        $style[0] = 'svg.ge-export-svg-dark { filter: invert(100%) hue-rotate(180deg); }&#xa;svg.ge-export-svg-dark foreignObject img,&#xa;svg.ge-export-svg-dark image:not(svg.ge-export-svg-dark switch image),&#xa;svg.ge-export-svg-dark svg { filter: invert(100%) hue-rotate(180deg) }';
+
+        $output = $svgAsXML->saveXML();
+        return $output;
+    }
 }
 
