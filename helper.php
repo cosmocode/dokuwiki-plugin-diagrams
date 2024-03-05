@@ -41,25 +41,4 @@ class helper_plugin_diagrams extends \dokuwiki\Extension\Plugin
         $serviceHost = parse_url($confServiceUrl, PHP_URL_HOST); // Host-Portion of the Url, e.g. "diagrams.xyz.org"
         return strpos($svg, 'embed.diagrams.net') || strpos($svg, 'draw.io') || strpos($svg, $serviceHost);
     }
-
-    /**
-     * Adds style node to render svg in dark theme
-     *
-     * @param string $svg The raw SVG data
-     * @return string
-     */
-    public static function addDarkModeStyle(string $svg)
-    {
-        $svgAsXML = simplexml_load_string($svg);
-        $svgAsXML->addAttribute('class', 'ge-export-svg-dark');
-
-        $defs = $svgAsXML->defs;
-
-        $style = $defs->addChild('style');
-        $style->addAttribute('type', 'text/css');
-        $style[0] = 'svg.ge-export-svg-dark { filter: invert(100%) hue-rotate(180deg); }&#xa;svg.ge-export-svg-dark foreignObject img,&#xa;svg.ge-export-svg-dark image:not(svg.ge-export-svg-dark switch image),&#xa;svg.ge-export-svg-dark svg { filter: invert(100%) hue-rotate(180deg) }';
-
-        $output = $svgAsXML->saveXML();
-        return $output;
-    }
 }

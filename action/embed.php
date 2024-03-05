@@ -112,10 +112,6 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
             return;
         }
 
-        if ($this->getConf('theme') === 'dark') {
-            $svg = $this->helper->addDarkModeStyle($svg);
-        }
-
         $original = rawWiki($id);
         $new = substr($original, 0, $pos) . $svg . substr($original, $pos + $len);
         saveWikiText($id, $new, $this->getLang('embedSaveSummary'));

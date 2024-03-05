@@ -126,7 +126,9 @@ class DiagramsEditor {
         const response = await fetch(uploadUrl, {
             method: 'POST',
             cache: 'no-cache',
-            body: svg,
+            body: JSINFO['plugins']['diagrams']['theme'] === 'dark'
+                ? this.#addDarkModeStyle(svg)
+                : svg
         });
 
         return response.ok;
@@ -151,7 +153,12 @@ class DiagramsEditor {
             '&sectok=' + JSINFO['sectok'];
 
         const body = new FormData();
-        body.set('svg', svg);
+        body.set(
+            'svg',
+            JSINFO['plugins']['diagrams']['theme'] === 'dark'
+            ? this.#addDarkModeStyle(svg)
+            : svg
+        );
 
         const response = await fetch(uploadUrl, {
             method: 'POST',
@@ -225,6 +232,29 @@ class DiagramsEditor {
                 .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
                 .join('')
         );
+    }
+
+    /**
+     * Adds style node to render svg in dark theme
+     *
+     * @param {string} svg The raw SVG data
+     * @return {string}
+     */
+    #addDarkModeStyle(svg)
+    {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(svg, "image/svg+xml");
+
+        xml.documentElement.setAttribute('class', 'ge-export-svg-dark');
+
+        const darkStyle = xml.createElementNS(xml.documentElement.namespaceURI, 'style');
+        darkStyle.setAttribute('type', 'text/css');
+        darkStyle.textContent = 'svg.ge-export-svg-dark { filter: invert(100%) hue-rotate(180deg); }&#xa;svg.ge-export-svg-dark foreignObject img,&#xa;svg.ge-export-svg-dark image:not(svg.ge-export-svg-dark switch image),&#xa;svg.ge-export-svg-dark svg { filter: invert(100%) hue-rotate(180deg) }';
+
+        const defs = xml.getElementsByTagName('defs')[0];        
+        defs.appendChild(darkStyle);
+
+        return new XMLSerializer().serializeToString(xml);
     }
 
     /**
