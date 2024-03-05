@@ -281,6 +281,7 @@ class DiagramsEditor {
             case 'export':
                 if (msg.format === 'svg') {
                     this.#svg = this.#decodeDataUri(msg.data);
+                    this.#svg = DiagramsEditor.svgThemeProcessing(this.#svg);
 
                     // export again as PNG
                     this.#diagramsEditor.contentWindow.postMessage(
