@@ -126,9 +126,7 @@ class DiagramsEditor {
         const response = await fetch(uploadUrl, {
             method: 'POST',
             cache: 'no-cache',
-            body: JSINFO['plugins']['diagrams']['theme'] === 'dark'
-                ? this.#addDarkModeStyle(svg)
-                : svg
+            body: DiagramsEditor.svgThemeProcessing(svg),
         });
 
         return response.ok;
@@ -153,12 +151,7 @@ class DiagramsEditor {
             '&sectok=' + JSINFO['sectok'];
 
         const body = new FormData();
-        body.set(
-            'svg',
-            JSINFO['plugins']['diagrams']['theme'] === 'dark'
-            ? this.#addDarkModeStyle(svg)
-            : svg
-        );
+        body.set('svg', DiagramsEditor.svgThemeProcessing(svg));
 
         const response = await fetch(uploadUrl, {
             method: 'POST',
@@ -181,7 +174,7 @@ class DiagramsEditor {
             '&sectok=' + JSINFO['sectok'];
 
         const body = new FormData();
-        body.set('svg', svg);
+        body.set('svg', DiagramsEditor.svgThemeProcessing(svg));
         body.set('png', png);
 
         const response = await fetch(uploadUrl, {
@@ -235,13 +228,15 @@ class DiagramsEditor {
     }
 
     /**
-     * Adds style node to render svg in dark theme
+     * Add additional theme properties to svg data
      *
      * @param {string} svg The raw SVG data
      * @return {string}
      */
-    #addDarkModeStyle(svg)
+    static svgThemeProcessing(svg)
     {
+        if (JSINFO['plugins']['diagrams']['theme'] !== 'dark') return svg;
+
         const parser = new DOMParser();
         const xml = parser.parseFromString(svg, "image/svg+xml");
 
