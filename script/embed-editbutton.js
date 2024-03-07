@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             const diagramsEditor = new DiagramsEditor(() => {
                 // replace instead of reload to avoid accidentally re-submitting forms
-                window.location.replace(window.location.href);
+                // hash breaks replace, must be ignored
+                window.location.replace(window.location.pathname + window.location.search);
             });
             diagramsEditor.editEmbed(
                 JSINFO.id,
