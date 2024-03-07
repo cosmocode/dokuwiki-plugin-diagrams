@@ -244,7 +244,7 @@ class DiagramsEditor {
 
         const darkStyle = xml.createElementNS(xml.documentElement.namespaceURI, 'style');
         darkStyle.setAttribute('type', 'text/css');
-        darkStyle.textContent = 'svg.ge-export-svg-dark { filter: invert(100%) hue-rotate(180deg); }&#xa;svg.ge-export-svg-dark foreignObject img,&#xa;svg.ge-export-svg-dark image:not(svg.ge-export-svg-dark switch image),&#xa;svg.ge-export-svg-dark svg { filter: invert(100%) hue-rotate(180deg) }';
+        darkStyle.textContent = 'svg.ge-export-svg-dark { filter: invert(100%) hue-rotate(180deg); } svg.ge-export-svg-dark foreignObject img, svg.ge-export-svg-dark image:not(svg.ge-export-svg-dark switch image), svg.ge-export-svg-dark svg { filter: invert(100%) hue-rotate(180deg) }';
 
         const defs = xml.getElementsByTagName('defs')[0];        
         defs.appendChild(darkStyle);
