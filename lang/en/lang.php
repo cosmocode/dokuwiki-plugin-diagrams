@@ -1,7 +1,7 @@
 <?php
 
 $lang['missingConfig'] = 'Missing configuration for SVG diagrams: Remember to add "svg image/svg+xml" to mime.local.conf';
-
+$lang['errorMissingPNG'] = 'PNG not found in cache!';
 $lang['embedSaveSummary'] = 'Embedded diagram updated';
 
 $lang['js']['createButton'] = 'Create';

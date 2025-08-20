@@ -114,8 +114,12 @@ class syntax_plugin_diagrams_mediafile extends DokuWiki_Syntax_Plugin
             ];
 
             // if a PNG cache exists, use it instead of the real URL
+            // or display error if PNG of embedded diagram is missing
             if ($cachefile) {
                 $imageAttributes['src'] = 'dw2pdf://' . $cachefile;
+            } elseif ($this->getConf('pngcache') && is_a($this, 'syntax_plugin_diagrams_embed')) {
+                $renderer->doc .= $this->getLang('errorMissingPNG');
+                return false;
             }
 
             $renderer->doc .= '<img ' . buildAttributes($imageAttributes) . '/>';
