@@ -6,6 +6,7 @@
  * @author Andreas Gohr <gohr@example.com>
  */
 $lang['missingConfig']         = 'Fehlende Konfiguration für SVG Diagramme: Bitte "svg image/svg+xml" in mime.local.conf ergänzen';
+$lang['errorMissingPNG']       = 'PNG Datei im Cache nicht gefunden!';
 $lang['embedSaveSummary']      = 'Eingebettetes Diagramm aktualisiert';
 $lang['js']['createButton']    = 'Erstellen';
 $lang['js']['createLink']      = 'Diagramm erstellen';
