@@ -3,10 +3,11 @@
 /**
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  *
+ * @author Schplurtz le Déboulonné <Schplurtz@laposte.net>
  * @author Squid0ne <flo.v.pro@gmail.com>
- * @author Schplurtz le Déboulonné <schplurtz@laposte.net>
  */
 $lang['missingConfig']         = 'Configuration manquante pour les diagrammes SVG : Souvenez vous d\'ajouter "svg image/svg+xml" à conf/mime.local.conf';
+$lang['errorMissingPNG']       = 'PNG introuvable dans le cache !';
 $lang['embedSaveSummary']      = 'Schéma intégré mis à jour';
 $lang['js']['createButton']    = 'Créer';
 $lang['js']['createLink']      = 'Créer un diagramme';
@@ -28,6 +29,7 @@ $lang['js']['errorUnsupportedFormat'] = 'Format de fichier non pris en charge !'
 $lang['js']['saving']          = 'Enregistre…';
 $lang['js']['PMMenuItem-embed'] = 'Intégrer un schéma';
 $lang['js']['selectSource']    = 'Sélectionner un fichier';
+$lang['js']['mediaSource']     = 'source de médias';
 $lang['js']['alignment']       = 'Alignement';
 $lang['js']['left']            = 'gauche';
 $lang['js']['center']          = 'centre';
