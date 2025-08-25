@@ -126,7 +126,7 @@ class DiagramsEditor {
         const response = await fetch(uploadUrl, {
             method: 'POST',
             cache: 'no-cache',
-            body: svg,
+            body: DiagramsEditor.svgThemeProcessing(svg),
         });
 
         return response.ok;
@@ -151,7 +151,7 @@ class DiagramsEditor {
             '&sectok=' + JSINFO['sectok'];
 
         const body = new FormData();
-        body.set('svg', svg);
+        body.set('svg', DiagramsEditor.svgThemeProcessing(svg));
 
         const response = await fetch(uploadUrl, {
             method: 'POST',
@@ -174,7 +174,7 @@ class DiagramsEditor {
             '&sectok=' + JSINFO['sectok'];
 
         const body = new FormData();
-        body.set('svg', svg);
+        body.set('svg', DiagramsEditor.svgThemeProcessing(svg));
         body.set('png', png);
 
         const response = await fetch(uploadUrl, {
@@ -192,7 +192,7 @@ class DiagramsEditor {
     #createEditor() {
         this.#diagramsEditor = document.createElement('iframe');
         this.#diagramsEditor.id = 'plugin__diagrams-editor';
-        this.#diagramsEditor.src = JSINFO['plugins']['diagrams']['service_url'];
+        this.#diagramsEditor.src = JSINFO['plugins']['diagrams']['service_url'] + '&ui=' + JSINFO['plugins']['diagrams']['theme'];
         document.body.appendChild(this.#diagramsEditor);
 
         this.#listener = this.#handleMessage.bind(this);
@@ -228,6 +228,31 @@ class DiagramsEditor {
     }
 
     /**
+     * Add additional theme properties to svg data
+     *
+     * @param {string} svg The raw SVG data
+     * @return {string}
+     */
+    static svgThemeProcessing(svg)
+    {
+        if (JSINFO['plugins']['diagrams']['theme'] !== 'dark') return svg;
+
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(svg, "image/svg+xml");
+
+        xml.documentElement.setAttribute('class', 'ge-export-svg-dark');
+
+        const darkStyle = xml.createElementNS(xml.documentElement.namespaceURI, 'style');
+        darkStyle.setAttribute('type', 'text/css');
+        darkStyle.textContent = 'svg.ge-export-svg-dark { filter: invert(100%) hue-rotate(180deg); } svg.ge-export-svg-dark foreignObject img, svg.ge-export-svg-dark image:not(svg.ge-export-svg-dark switch image), svg.ge-export-svg-dark svg { filter: invert(100%) hue-rotate(180deg) }';
+
+        const defs = xml.getElementsByTagName('defs')[0];        
+        defs.replaceChildren(darkStyle);
+
+        return new XMLSerializer().serializeToString(xml);
+    }
+
+    /**
      * Handle messages from diagramming service
      *
      * @param {Event} event
@@ -256,6 +281,7 @@ class DiagramsEditor {
             case 'export':
                 if (msg.format === 'svg') {
                     this.#svg = this.#decodeDataUri(msg.data);
+                    this.#svg = DiagramsEditor.svgThemeProcessing(this.#svg);
 
                     // export again as PNG
                     this.#diagramsEditor.contentWindow.postMessage(

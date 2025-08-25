@@ -40,6 +40,7 @@ class action_plugin_diagrams_action extends DokuWiki_Action_Plugin
         $JSINFO['sectok'] = getSecurityToken();
         $JSINFO['plugins']['diagrams'] = [
             'service_url' => $this->getConf('service_url'),
+            'theme' => $this->getConf('theme'),
             'mode' => $this->getConf('mode'),
         ];
     }
