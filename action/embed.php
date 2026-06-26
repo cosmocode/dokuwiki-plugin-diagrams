@@ -118,6 +118,5 @@ class action_plugin_diagrams_embed extends \dokuwiki\Extension\ActionPlugin
         unlock($id);
         echo 'OK';
     }
-
 }
 

@@ -52,6 +52,8 @@ if (typeof window.toolbar !== 'undefined') {
             const origSvg = area.value.substring(selection.start, selection.end);
 
             diagramsEditor.editMemory(origSvg, svg => {
+                svg = DiagramsEditor.svgThemeProcessing(svg);
+
                 if (!origSvg) {
                     // if this is a new diagram, wrap it in a <diagram> tag
                     svg = '<diagram>' + svg + '</diagram>';
