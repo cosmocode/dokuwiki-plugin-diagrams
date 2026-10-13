@@ -23,7 +23,10 @@ class helper_plugin_diagrams extends \dokuwiki\Extension\Plugin
     /**
      * Check if the given SVG is a diagrams.net diagram
      *
-     * This is done by ensuring that the service host is part of the SVG header
+     * This is done by ensuring that the service host is part of the SVG header or that the
+     * SVG root element carries the diagram model in its content attribute, which is what
+     * diagrams.net needs to edit the file. The latter covers exports from app.diagrams.net
+     * or the VS Code extension, which do not mention any of the known hosts.
      *
      * @param string $svg The raw SVG data (only the configured leading bytes are checked)
      * @return bool
@@ -39,6 +42,7 @@ class helper_plugin_diagrams extends \dokuwiki\Extension\Plugin
         if (empty($svg) || substr($svg, 0, 4) !== '<svg') return false;
         $confServiceUrl = $this->getConf('service_url'); // like "https://diagrams.xyz.org/?embed=1&..."
         $serviceHost = parse_url($confServiceUrl, PHP_URL_HOST); // Host-Portion of the Url, e.g. "diagrams.xyz.org"
-        return strpos($svg, 'embed.diagrams.net') || strpos($svg, 'draw.io') || strpos($svg, $serviceHost);
+        return strpos($svg, 'embed.diagrams.net') || strpos($svg, 'draw.io') || strpos($svg, $serviceHost) ||
+            preg_match('/^<svg\b[^>]*\scontent="&lt;mxfile[\s&]/', $svg);
     }
 }
